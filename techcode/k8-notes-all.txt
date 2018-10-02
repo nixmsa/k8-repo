@@ -1,0 +1,531 @@
+docker.io/jasonrivers/nagios
+
+root@kmaster# kubectl run nagios-xi --image=jasonrivers/nagios --port=80
+kubectl run --generator=deployment/apps.v1beta1 is DEPRECATED and will be removed in a future version. Use kubectl create instead.
+deployment.apps/nagios-xi created
+root@kmaster#  kubectl get pods -o wide
+NAME                       READY   STATUS              RESTARTS   AGE   IP       NODE            NOMINATED NODE
+nagios-xi-fbbd4cc7-p64tp   0/1     ContainerCreating   0          6s    <none>   minion2.bc.ca   <none>
+root@kmaster#
+
+Name:               nagios-xi-fbbd4cc7-p64tp
+Namespace:          default
+Priority:           0
+PriorityClassName:  <none>
+Node:               minion2.bc.ca/192.168.136.12
+Start Time:         Sat, 29 Sep 2018 10:16:08 -0700
+Labels:             pod-template-hash=fbbd4cc7
+                    run=nagios-xi
+Annotations:        <none>
+Status:             Pending
+IP:
+Controlled By:      ReplicaSet/nagios-xi-fbbd4cc7
+Containers:
+  nagios-xi:
+    Container ID:
+    Image:          jasonrivers/nagios
+    Image ID:
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ContainerCreating
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-8lppb (ro)
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             False
+  ContainersReady   False
+  PodScheduled      True
+Volumes:
+  default-token-8lppb:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-8lppb
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type    Reason     Age   From                    Message
+  ----    ------     ----  ----                    -------
+  Normal  Scheduled  51s   default-scheduler       Successfully assigned default/nagios-xi-fbbd4cc7-p64tp to minion2.bc.ca
+  Normal  Pulling    50s   kubelet, minion2.bc.ca  pulling image "jasonrivers/nagios"
+
+root@kmaster# kubectl scale deployment  nagios-xi  --replicas=3
+deployment.extensions/nagios-xi scaled
+root@kmaster#  kubectl get pods -o wide
+NAME                       READY   STATUS    RESTARTS   AGE     IP          NODE            NOMINATED NODE
+nagios-xi-fbbd4cc7-bnc49   1/1     Running   0          11s     10.44.0.1   minion1.bc.ca   <none>
+nagios-xi-fbbd4cc7-cqldm   1/1     Running   0          10s     10.36.0.2   minion2.bc.ca   <none>
+nagios-xi-fbbd4cc7-p64tp   1/1     Running   0          2m47s   10.36.0.1   minion2.bc.ca   <none>
+root@kmaster#
+
+root@kmaster# kubectl expose deployment nagios-xi --type=NodePort --name=nagios-service
+service/nagios-service exposed
+root@kmaster#  kubectl get pods -o wide
+NAME                       READY   STATUS    RESTARTS   AGE     IP          NODE            NOMINATED NODE
+nagios-xi-fbbd4cc7-bnc49   1/1     Running   0          3m3s    10.44.0.1   minion1.bc.ca   <none>
+nagios-xi-fbbd4cc7-cqldm   1/1     Running   0          3m2s    10.36.0.2   minion2.bc.ca   <none>
+nagios-xi-fbbd4cc7-p64tp   1/1     Running   0          5m39s   10.36.0.1   minion2.bc.ca   <none>
+root@kmaster# kubectl get services nagios-service
+NAME             TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+nagios-service   NodePort   10.106.44.69   <none>        80:32433/TCP   21s
+root@kmaster#
+
+root@kmaster# kubectl get services nagios-service
+NAME             TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+nagios-service   NodePort   10.106.44.69   <none>        80:32433/TCP   101s
+root@kmaster# curl 10.106.44.69
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>401 Unauthorized</title>
+</head><body>
+<h1>Unauthorized</h1>
+<p>This server could not verify that you
+are authorized to access the document
+requested.  Either you supplied the wrong
+credentials (e.g., bad password), or your
+browser doesn't understand how to supply
+the credentials required.</p>
+<hr>
+<address>Apache/2.4.18 (Ubuntu) Server at 10.106.44.69 Port 80</address>
+</body></html>
+root@kmaster# 32433
+
+
+note this is internal cluster ip
+###
+for external 
+http://http://192.168.136.12:32433/ alll nodes working
+
+
+###
+root@kmaster# kubectl get services nagios-service
+NAME             TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+nagios-service   NodePort   10.106.44.69   <none>        80:32433/TCP   19m
+root@kmaster#  kubectl get deployment
+NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+nagios-xi   3         3         3            3           25m
+root@kmaster#
+
+####
+
+root@kmaster# kubectl get services nagios-service
+NAME             TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+nagios-service   NodePort   10.106.44.69   <none>        80:32433/TCP   19m
+root@kmaster#  kubectl get deployment
+NAME        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+nagios-xi   3         3         3            3           25m
+root@kmaster# kubectl delete services nagios-service
+service "nagios-service" deleted
+root@kmaster# kubectl delete deployment nagios-xi
+deployment.extensions "nagios-xi" deleted
+root@kmaster#  kubectl get deployment
+No resources found.
+root@kmaster# kubectl get services nagios-service
+Error from server (NotFound): services "nagios-service" not found
+root@kmaster#
+
+#M#kubectl get all;
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/nagios-xi-fbbd4cc7-668cd   1/1     Running   0          11m
+pod/nagios-xi-fbbd4cc7-br6t5   1/1     Running   0          12m
+pod/nagios-xi-fbbd4cc7-c82zm   1/1     Running   0          11m
+pod/nagios-xi-fbbd4cc7-fc8lj   1/1     Running   0          11m
+pod/nagios-xi-fbbd4cc7-vhqgf   1/1     Running   0          11m
+
+NAME                     TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
+service/kubernetes       ClusterIP   10.96.0.1     <none>        443/TCP        2d11h
+service/nagios-service   NodePort    10.110.6.76   <none>        80:32264/TCP   9m42s
+
+NAME                        DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/nagios-xi   5         5         5            5           12m
+
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/nagios-xi-fbbd4cc7   5         5         5       12m
+#M#
+
+
+#M#kubectl get deploy/nagios-xi -o yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  creationTimestamp: 2018-10-01T16:53:36Z
+  generation: 2
+  labels:
+    run: nagios-xi
+  name: nagios-xi
+  namespace: default
+  resourceVersion: "34695"
+  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/nagios-xi
+  uid: 8a3c536d-c59a-11e8-9251-000c29c00a4d
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 5
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      run: nagios-xi
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: nagios-xi
+    spec:
+      containers:
+      - image: jasonrivers/nagios
+        imagePullPolicy: Always
+        name: nagios-xi
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 5
+  conditions:
+  - lastTransitionTime: 2018-10-01T16:53:37Z
+    lastUpdateTime: 2018-10-01T16:53:41Z
+    message: ReplicaSet "nagios-xi-fbbd4cc7" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: 2018-10-01T16:55:07Z
+    lastUpdateTime: 2018-10-01T16:55:07Z
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  observedGeneration: 2
+  readyReplicas: 5
+  replicas: 5
+  updatedReplicas: 5
+#M#
+
+
+
+
+#M#kubectl get service/nagios-service -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: 2018-10-01T16:56:25Z
+  labels:
+    run: nagios-xi
+  name: nagios-service
+  namespace: default
+  resourceVersion: "34805"
+  selfLink: /api/v1/namespaces/default/services/nagios-service
+  uid: eedd129d-c59a-11e8-9251-000c29c00a4d
+spec:
+  clusterIP: 10.110.6.76
+  externalTrafficPolicy: Cluster
+  ports:
+  - nodePort: 32264
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: nagios-xi
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+#M#
+
+########################## LINUXtechi POD#################
+
+
+#M#kubectl create -f pod.yml
+pod/web-server-pod created
+#M#ls
+pod.yml
+#M#
+
+#M#cat pod.yml
+apiVersion: v1
+kind: Pod
+metadata:
+ name: web-server-pod
+ labels:
+  app: web-server-app01
+  region: CA
+  rack: r1
+  version: "1.1"
+
+spec:
+  containers:
+    - name: httpd
+      image: httpd
+      ports:
+      - containerPort: 80
+
+#M#
+
+
+#M#kubectl get pods -o wide
+NAME                       READY   STATUS    RESTARTS   AGE     IP          NODE            NOMINATED NODE
+nagios-xi-fbbd4cc7-668cd   1/1     Running   0          70m     10.44.0.2   minion1.bc.ca   <none>
+nagios-xi-fbbd4cc7-br6t5   1/1     Running   0          71m     10.44.0.1   minion1.bc.ca   <none>
+nagios-xi-fbbd4cc7-c82zm   1/1     Running   0          70m     10.44.0.3   minion1.bc.ca   <none>
+nagios-xi-fbbd4cc7-fc8lj   1/1     Running   0          70m     10.36.0.2   minion2.bc.ca   <none>
+nagios-xi-fbbd4cc7-vhqgf   1/1     Running   0          70m     10.36.0.1   minion2.bc.ca   <none>
+web-server-pod             1/1     Running   0          9m17s   10.36.0.3   minion2.bc.ca   <none>
+#M#
+
+
+#M#curl 10.36.0.3
+<html><body><h1>It works!</h1></body></html>
+#M#
+
+#M#kubectl expose pods web-server-pod --name=webpod-service --target-port=80 --type=NodePort
+service/webpod-service exposed
+#M#
+
+#M#kubectl get service -o wide
+NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE     SELECTOR
+kubernetes       ClusterIP   10.96.0.1        <none>        443/TCP        2d12h   <none>
+nagios-service   NodePort    10.110.6.76      <none>        80:32264/TCP   77m     run=nagios-xi
+webpod-service   NodePort    10.102.175.132   <none>        80:32476/TCP   51s     app=web-server-app01,rack=r1,region=CA,version=1.1
+#M#
+
+
+#M#kubectl get svc
+NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+kubernetes       ClusterIP   10.96.0.1        <none>        443/TCP        2d12h
+nagios-service   NodePort    10.110.6.76      <none>        80:32264/TCP   86m
+webpod-service   NodePort    10.102.175.132   <none>        80:32476/TCP   10m
+#M#kubectl get svc -o wide
+NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE     SELECTOR
+kubernetes       ClusterIP   10.96.0.1        <none>        443/TCP        2d12h   <none>
+nagios-service   NodePort    10.110.6.76      <none>        80:32264/TCP   86m     run=nagios-xi
+webpod-service   NodePort    10.102.175.132   <none>        80:32476/TCP   10m     app=web-server-app01,rack=r1,region=CA,version=1.1
+#M#
+
+#M#kubectl get pods -o wide
+NAME                       READY   STATUS    RESTARTS   AGE   IP          NODE            NOMINATED NODE
+nagios-xi-fbbd4cc7-668cd   1/1     Running   0          89m   10.44.0.2   minion1.bc.ca   <none>
+nagios-xi-fbbd4cc7-br6t5   1/1     Running   0          90m   10.44.0.1   minion1.bc.ca   <none>
+nagios-xi-fbbd4cc7-c82zm   1/1     Running   0          89m   10.44.0.3   minion1.bc.ca   <none>
+nagios-xi-fbbd4cc7-fc8lj   1/1     Running   0          89m   10.36.0.2   minion2.bc.ca   <none>
+nagios-xi-fbbd4cc7-vhqgf   1/1     Running   0          89m   10.36.0.1   minion2.bc.ca   <none>
+web-server-pod             1/1     Running   0          28m   10.36.0.3   minion2.bc.ca   <none>
+#M#
+work from outsite 192.168.136.10:32476
+####
+
+
+remove service
+
+###
+#M#kubectl get svc -o wide
+NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE     SELECTOR
+kubernetes       ClusterIP   10.96.0.1        <none>        443/TCP        2d13h   <none>
+nagios-service   NodePort    10.110.6.76      <none>        80:32264/TCP   94m     run=nagios-xi
+webpod-service   NodePort    10.102.175.132   <none>        80:32476/TCP   18m     app=web-server-app01,rack=r1,region=CA,version=1.1
+#M#kubectl delete svc webpod-service
+service "webpod-service" deleted
+#M#kubectl get svc -o wide
+NAME             TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE     SELECTOR
+kubernetes       ClusterIP   10.96.0.1     <none>        443/TCP        2d13h   <none>
+nagios-service   NodePort    10.110.6.76   <none>        80:32264/TCP   94m     run=nagios-xi
+#M#
+### Creating the same service with yml file ###
+
+#M#kubectl create -f service.yml
+service/webpod-service created
+#M#
+
+service/webpod-service created
+#M#cat service.yml
+apiVersion: v1
+kind: Service
+metadata:
+ name: webpod-service
+ labels:
+   app: webpod-service-label
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    nodePort: 30001
+    protocol: TCP
+  selector:
+    version: "1.1"
+#M#
+
+#M#kubectl get svc
+NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+kubernetes       ClusterIP   10.96.0.1        <none>        443/TCP        2d13h
+nagios-service   NodePort    10.110.6.76      <none>        80:32264/TCP   107m
+webpod-service   NodePort    10.102.100.202   <none>        80:30001/TCP   2m21s
+#M#kubectl get svc -o wide
+NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE     SELECTOR
+kubernetes       ClusterIP   10.96.0.1        <none>        443/TCP        2d13h   <none>
+nagios-service   NodePort    10.110.6.76      <none>        80:32264/TCP   107m    run=nagios-xi
+webpod-service   NodePort    10.102.100.202   <none>        80:30001/TCP   2m27s   version=1.1
+#M#
+
+
+this time no ramdon port is genertated we define 30001
+
+#M#kubectl get svc -o wide
+NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE     SELECTOR
+kubernetes       ClusterIP   10.96.0.1        <none>        443/TCP        2d13h   <none>
+nagios-service   NodePort    10.110.6.76      <none>        80:32264/TCP   107m    run=nagios-xi
+webpod-service   NodePort    10.102.100.202   <none>        80:30001/TCP   2m27s   version=1.1
+#M#curl 10.102.100.202
+<html><body><h1>It works!</h1></body></html>
+#M#curl 192.168.136.10:30001
+<html><body><h1>It works!</h1></body></html>
+#M#curl 192.168.136.11:30001
+<html><body><h1>It works!</h1></body></html>
+#M#
+#M#curl 192.168.136.12:30001
+<html><body><h1>It works!</h1></body></html>
+#M#curl 192.168.136.13:30001
+^C
+#M#
+
+
+working from internal and external as well.
+
+
+
+#M#kubectl create -f replication-controller.yml
+replicationcontroller/webserver-rc created
+#M#
+
+#M#cat replication-controller.yml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+ name: webserver-rc
+spec:
+ replicas: 5
+ selector:
+   app: lamp-appl
+ template:
+  metadata:
+   labels:
+    app: lamp-appl
+    region: CA
+    rack: r1
+    version: "1.1"
+  spec:
+    containers:
+    - name: webserver-php-conl
+      image: httpd
+      ports:
+      - containerPort: 80
+
+
+#M#kubectl get pods -o wide;
+NAME                       READY   STATUS    RESTARTS   AGE     IP          NODE            NOMINATED NODE
+nagios-xi-fbbd4cc7-668cd   1/1     Running   0          5h33m   10.44.0.2   minion1.bc.ca   <none>
+nagios-xi-fbbd4cc7-br6t5   1/1     Running   0          5h35m   10.44.0.1   minion1.bc.ca   <none>
+nagios-xi-fbbd4cc7-c82zm   1/1     Running   0          5h33m   10.44.0.3   minion1.bc.ca   <none>
+nagios-xi-fbbd4cc7-fc8lj   1/1     Running   0          5h33m   10.36.0.2   minion2.bc.ca   <none>
+nagios-xi-fbbd4cc7-vhqgf   1/1     Running   0          5h33m   10.36.0.1   minion2.bc.ca   <none>
+web-server-pod             1/1     Running   0          4h32m   10.36.0.3   minion2.bc.ca   <none>
+webserver-rc-gnzjj         1/1     Running   0          79s     10.44.0.5   minion1.bc.ca   <none>
+webserver-rc-j6sn6         1/1     Running   0          79s     10.36.0.5   minion2.bc.ca   <none>
+webserver-rc-q8zbq         1/1     Running   0          79s     10.44.0.6   minion1.bc.ca   <none>
+webserver-rc-svzhp         1/1     Running   0          79s     10.36.0.4   minion2.bc.ca   <none>
+webserver-rc-wcvdj         1/1     Running   0          79s     10.44.0.4   minion1.bc.ca   <none>
+#M#
+
+
+#M#kubectl get rc
+NAME           DESIRED   CURRENT   READY   AGE
+webserver-rc   5         5         5       2m29s
+#M#kubectl get rc -o wide
+NAME           DESIRED   CURRENT   READY   AGE     CONTAINERS           IMAGES   SELECTOR
+webserver-rc   5         5         5       2m51s   webserver-php-conl   httpd    app=lamp-appl
+#M#
+
+
+
+#M#kubectl create -f rc-service.yml
+service/webserver-server created
+#M#cat rc-service.yml
+apiVersion: v1
+kind: Service
+metadata:
+ name: webserver-server
+ labels:
+   app: webserver-service-label
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    nodePort: 30002
+    protocol: TCP
+  selector:
+    version: "1.1"
+
+#M#
+
+#M#kubectl get svc -o wide;
+NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE     SELECTOR
+kubernetes         ClusterIP   10.96.0.1        <none>        443/TCP        3d12h   <none>
+nagios-service     NodePort    10.110.6.76      <none>        80:32264/TCP   25h     run=nagios-xi
+webpod-service     NodePort    10.102.100.202   <none>        80:30001/TCP   23h     version=1.1
+webserver-server   NodePort    10.102.70.19     <none>        80:30002/TCP   2m27s   version=1.1
+#M#
+
+#M#kubectl get svc -o wide;
+NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE     SELECTOR
+kubernetes         ClusterIP   10.96.0.1        <none>        443/TCP        3d12h   <none>
+nagios-service     NodePort    10.110.6.76      <none>        80:32264/TCP   25h     run=nagios-xi
+webpod-service     NodePort    10.102.100.202   <none>        80:30001/TCP   23h     version=1.1
+webserver-server   NodePort    10.102.70.19     <none>        80:30002/TCP   2m27s   version=1.1
+#M#curl http://192.168.136.10:30002
+<html><body><h1>It works!</h1></body></html>
+#M#curl http://192.168.136.11:30002
+<html><body><h1>It works!</h1></body></html>
+#M#curl http://192.168.136.12:30002
+<html><body><h1>It works!</h1></body></html>
+#M#curl http://192.168.136.13:30002
+^C
+#M#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
