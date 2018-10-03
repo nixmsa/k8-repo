@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: apache2-deployment
+spec:
+ selector:
+   matchLabels:
+     app: apache2-php
+ template:
+   metadata: 
+     labels:
+       app: apache2-php
+   spec:
+    containers:
+    - name: apache2-php
+      image: mobingi/ubuntu-apache2-php7
+      ports:
+      - containerPort: 80
+
