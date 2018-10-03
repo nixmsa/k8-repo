@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata: 
+  name: apache2-server
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: apache2-php
+
