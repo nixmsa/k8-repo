@@ -1,0 +1,237 @@
+
+
+
+`#M#kubectl get deployment
+NAME                 DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+apache2-deployment   3         3         3            0           25h
+nagios-xi            5         5         5            5           3d2h
+nginx                1         1         1            1           34m
+nginx01              1         1         1            1           21m
+#M#kubectl get rs
+NAME                            DESIRED   CURRENT   READY   AGE
+apache2-deployment-6799d467bf   3         3         0       25h
+nagios-xi-fbbd4cc7              5         5         5       3d2h
+nginx-cdb6b5b95                 1         1         1       34m
+nginx01-59f7bdf6b9              1         1         1       22m
+#M#kubectl expose deployment nginx01 --type=NodePort
+service/nginx01 exposed
+#M#kubectl expose deployment nginx --type=NodePort
+service/nginx exposed
+#M#kubectl get servicel
+error: the server doesn't have a resource type "servicel"
+#M#kubectl get service;
+NAME               TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                                              AGE
+apache2-server     LoadBalancer   10.97.159.202    <pending>     80:30910/TCP                                         26h
+kubernetes         ClusterIP      10.96.0.1        <none>        443/TCP                                              5d13h
+nagios-service     NodePort       10.110.6.76      <none>        80:32264/TCP                                         3d2h
+nginx              NodePort       10.107.156.167   <none>        80:30744/TCP                                         13s
+nginx01            NodePort       10.108.67.217    <none>        80:31571/TCP                                         26s
+webpod-service     NodePort       10.102.100.202   <none>        80:30001/TCP                                         3d
+webserver-server   NodePort       10.102.70.19     <none>        80:30002/TCP                                         2d
+#M#kubectl get service;
+NAME               TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+apache2-server     LoadBalancer   10.97.159.202    <pending>     80:30910/TCP   26h
+kubernetes         ClusterIP      10.96.0.1        <none>        443/TCP        5d13h
+nagios-service     NodePort       10.110.6.76      <none>        80:32264/TCP   3d2h
+nginx              NodePort       10.107.156.167   <none>        80:30744/TCP   20s
+nginx01            NodePort       10.108.67.217    <none>        80:31571/TCP   33s
+webpod-service     NodePort       10.102.100.202   <none>        80:30001/TCP   3d
+webserver-server   NodePort       10.102.70.19     <none>        80:30002/TCP   2d
+#M#curl  10.108.67.217
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+#M#ll
+total 8
+-rw-------. 1 root root 1570 Oct  1  2017 anaconda-ks.cfg
+-rw-r--r--  1 root root   10 Oct  2 12:14 README.md
+drwxr-xr-x  3 root root  174 Oct  2 14:11 techcode
+-rw-r--r--  1 root root    0 Oct  2 14:19 test.txt
+#M#kubectl get all
+NAME                                      READY   STATUS             RESTARTS   AGE
+pod/apache2-deployment-6799d467bf-2njps   0/1     ImagePullBackOff   0          145m
+pod/apache2-deployment-6799d467bf-clr4h   0/1     ImagePullBackOff   0          25h
+pod/apache2-deployment-6799d467bf-zvgfg   0/1     ImagePullBackOff   0          145m
+pod/nagios-xi-fbbd4cc7-2qj9w              1/1     Running            0          145m
+pod/nagios-xi-fbbd4cc7-668cd              1/1     Running            0          3d2h
+pod/nagios-xi-fbbd4cc7-7kh9s              1/1     Running            0          145m
+pod/nagios-xi-fbbd4cc7-br6t5              1/1     Running            0          3d2h
+pod/nagios-xi-fbbd4cc7-c82zm              1/1     Running            0          3d2h
+pod/nginx-cdb6b5b95-4mjdc                 1/1     Running            0          37m
+pod/nginx01-59f7bdf6b9-rbmqr              1/1     Running            0          25m
+pod/webserver-rc-gnzjj                    1/1     Running            0          2d20h
+pod/webserver-rc-lgr7v                    1/1     Running            0          145m
+pod/webserver-rc-plw6f                    1/1     Running            0          145m
+pod/webserver-rc-q8zbq                    1/1     Running            0          2d20h
+pod/webserver-rc-wcvdj                    1/1     Running            0          2d20h
+
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicationcontroller/webserver-rc   5         5         5       2d20h
+
+NAME                       TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+service/apache2-server     LoadBalancer   10.97.159.202    <pending>     80:30910/TCP   26h
+service/kubernetes         ClusterIP      10.96.0.1        <none>        443/TCP        5d13h
+service/nagios-service     NodePort       10.110.6.76      <none>        80:32264/TCP   3d2h
+service/nginx              NodePort       10.107.156.167   <none>        80:30744/TCP   88s
+service/nginx01            NodePort       10.108.67.217    <none>        80:31571/TCP   101s
+service/webpod-service     NodePort       10.102.100.202   <none>        80:30001/TCP   3d
+service/webserver-server   NodePort       10.102.70.19     <none>        80:30002/TCP   2d
+
+NAME                                 DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/apache2-deployment   3         3         3            0           25h
+deployment.apps/nagios-xi            5         5         5            5           3d2h
+deployment.apps/nginx                1         1         1            1           37m
+deployment.apps/nginx01              1         1         1            1           25m
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/apache2-deployment-6799d467bf   3         3         0       25h
+replicaset.apps/nagios-xi-fbbd4cc7              5         5         5       3d2h
+replicaset.apps/nginx-cdb6b5b95                 1         1         1       37m
+replicaset.apps/nginx01-59f7bdf6b9              1         1         1       25m
+#M#kubectl get deploy/nginx -o yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  creationTimestamp: 2018-10-04T18:27:35Z
+  generation: 1
+  labels:
+    run: nginx
+  name: nginx
+  namespace: default
+  resourceVersion: "76508"
+  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/nginx
+  uid: 2a94fb31-c803-11e8-b498-000c29c00a4d
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      run: nginx
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: nginx
+    spec:
+      containers:
+      - image: nginx
+        imagePullPolicy: Always
+        name: nginx
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: 2018-10-04T18:27:55Z
+    lastUpdateTime: 2018-10-04T18:27:55Z
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: 2018-10-04T18:27:36Z
+    lastUpdateTime: 2018-10-04T18:27:55Z
+    message: ReplicaSet "nginx-cdb6b5b95" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
+#M#kubectl get svc
+NAME               TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+apache2-server     LoadBalancer   10.97.159.202    <pending>     80:30910/TCP   26h
+kubernetes         ClusterIP      10.96.0.1        <none>        443/TCP        5d13h
+nagios-service     NodePort       10.110.6.76      <none>        80:32264/TCP   3d2h
+nginx              NodePort       10.107.156.167   <none>        80:30744/TCP   2m59s
+nginx01            NodePort       10.108.67.217    <none>        80:31571/TCP   3m12s
+webpod-service     NodePort       10.102.100.202   <none>        80:30001/TCP   3d
+webserver-server   NodePort       10.102.70.19     <none>        80:30002/TCP   2d
+#M#kubectl get service/nginx -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: 2018-10-04T19:03:40Z
+  labels:
+    run: nginx
+  name: nginx
+  namespace: default
+  resourceVersion: "78163"
+  selfLink: /api/v1/namespaces/default/services/nginx
+  uid: 349015c9-c808-11e8-b498-000c29c00a4d
+spec:
+  clusterIP: 10.107.156.167
+  externalTrafficPolicy: Cluster
+  ports:
+  - nodePort: 30744
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: nginx
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+#M#kubectl get pod;
+NAME                                  READY   STATUS             RESTARTS   AGE
+apache2-deployment-6799d467bf-2njps   0/1     ImagePullBackOff   0          147m
+apache2-deployment-6799d467bf-clr4h   0/1     ImagePullBackOff   0          25h
+apache2-deployment-6799d467bf-zvgfg   0/1     ImagePullBackOff   0          147m
+nagios-xi-fbbd4cc7-2qj9w              1/1     Running            0          147m
+nagios-xi-fbbd4cc7-668cd              1/1     Running            0          3d2h
+nagios-xi-fbbd4cc7-7kh9s              1/1     Running            0          147m
+nagios-xi-fbbd4cc7-br6t5              1/1     Running            0          3d2h
+nagios-xi-fbbd4cc7-c82zm              1/1     Running            0          3d2h
+nginx-cdb6b5b95-4mjdc                 1/1     Running            0          39m
+nginx01-59f7bdf6b9-rbmqr              1/1     Running            0          27m
+webserver-rc-gnzjj                    1/1     Running            0          2d20h
+webserver-rc-lgr7v                    1/1     Running            0          147m
+webserver-rc-plw6f                    1/1     Running            0          147m
+webserver-rc-q8zbq                    1/1     Running            0          2d20h
+webserver-rc-wcvdj                    1/1     Running            0          2d20h
+#M#kubectl get pod/nginx -o yaml
+Error from server (NotFound): pods "nginx" not found
+#M#
+################
+kubectl expose deployment nginx01 --type=NodePort
+kubcetl run nginx --image-nginx --port=80
