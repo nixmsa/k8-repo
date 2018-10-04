@@ -271,4 +271,235 @@ Commercial support is available at
 </body>
 </html>
 #M#
+##########
+
+#M#kubectl cluster-info
+Kubernetes master is running at https://192.168.136.10:6443
+KubeDNS is running at https://192.168.136.10:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+#M#
+
+#################################
+#################################
+#M#kubectl -s https://192.168.136.10:6443 run hello-world --image=tutum/hello-world --replicas=1 --port=80
+kubectl run --generator=deployment/apps.v1beta1 is DEPRECATED and will be removed in a future version. Use kubectl create instead.
+deployment.apps/hello-world created
+#M#kubectl get pods;
+NAME                                  READY   STATUS             RESTARTS   AGE
+apache2-deployment-6799d467bf-2njps   0/1     ImagePullBackOff   0          3h1m
+apache2-deployment-6799d467bf-clr4h   0/1     ImagePullBackOff   0          26h
+apache2-deployment-6799d467bf-zvgfg   0/1     ImagePullBackOff   0          3h1m
+hello-world-bcf65bd46-pfmc2           1/1     Running            0          42s
+nagios-xi-fbbd4cc7-2qj9w              1/1     Running            0          3h1m
+nagios-xi-fbbd4cc7-668cd              1/1     Running            0          3d2h
+nagios-xi-fbbd4cc7-7kh9s              1/1     Running            0          3h1m
+nagios-xi-fbbd4cc7-br6t5              1/1     Running            0          3d2h
+nagios-xi-fbbd4cc7-c82zm              1/1     Running            0          3d2h
+nginx-cdb6b5b95-4mjdc                 1/1     Running            0          73m
+nginx01-59f7bdf6b9-rbmqr              1/1     Running            0          61m
+webserver-rc-gnzjj                    1/1     Running            0          2d21h
+webserver-rc-lgr7v                    1/1     Running            0          3h1m
+webserver-rc-plw6f                    1/1     Running            0          3h1m
+webserver-rc-q8zbq                    1/1     Running            0          2d21h
+webserver-rc-wcvdj                    1/1     Running            0          2d21h
+#M#kubectl get rc
+NAME           DESIRED   CURRENT   READY   AGE
+webserver-rc   5         5         5       2d21h
+#M#kubectl get all
+NAME                                      READY   STATUS             RESTARTS   AGE
+pod/apache2-deployment-6799d467bf-2njps   0/1     ImagePullBackOff   0          3h2m
+pod/apache2-deployment-6799d467bf-clr4h   0/1     ImagePullBackOff   0          26h
+pod/apache2-deployment-6799d467bf-zvgfg   0/1     ImagePullBackOff   0          3h2m
+pod/hello-world-bcf65bd46-pfmc2           1/1     Running            0          99s
+pod/nagios-xi-fbbd4cc7-2qj9w              1/1     Running            0          3h2m
+pod/nagios-xi-fbbd4cc7-668cd              1/1     Running            0          3d2h
+pod/nagios-xi-fbbd4cc7-7kh9s              1/1     Running            0          3h2m
+pod/nagios-xi-fbbd4cc7-br6t5              1/1     Running            0          3d2h
+pod/nagios-xi-fbbd4cc7-c82zm              1/1     Running            0          3d2h
+pod/nginx-cdb6b5b95-4mjdc                 1/1     Running            0          74m
+pod/nginx01-59f7bdf6b9-rbmqr              1/1     Running            0          62m
+pod/webserver-rc-gnzjj                    1/1     Running            0          2d21h
+pod/webserver-rc-lgr7v                    1/1     Running            0          3h2m
+pod/webserver-rc-plw6f                    1/1     Running            0          3h2m
+pod/webserver-rc-q8zbq                    1/1     Running            0          2d21h
+pod/webserver-rc-wcvdj                    1/1     Running            0          2d21h
+
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicationcontroller/webserver-rc   5         5         5       2d21h
+
+NAME                       TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+service/apache2-server     LoadBalancer   10.97.159.202    <pending>     80:30910/TCP   27h
+service/kubernetes         ClusterIP      10.96.0.1        <none>        443/TCP        5d14h
+service/nagios-service     NodePort       10.110.6.76      <none>        80:32264/TCP   3d2h
+service/nginx              NodePort       10.107.156.167   <none>        80:30744/TCP   38m
+service/nginx01            NodePort       10.108.67.217    <none>        80:31571/TCP   38m
+service/webpod-service     NodePort       10.102.100.202   <none>        80:30001/TCP   3d1h
+service/webserver-server   NodePort       10.102.70.19     <none>        80:30002/TCP   2d1h
+
+NAME                                 DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/apache2-deployment   3         3         3            0           26h
+deployment.apps/hello-world          1         1         1            1           99s
+deployment.apps/nagios-xi            5         5         5            5           3d2h
+deployment.apps/nginx                1         1         1            1           74m
+deployment.apps/nginx01              1         1         1            1           62m
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/apache2-deployment-6799d467bf   3         3         0       26h
+replicaset.apps/hello-world-bcf65bd46           1         1         1       99s
+replicaset.apps/nagios-xi-fbbd4cc7              5         5         5       3d2h
+replicaset.apps/nginx-cdb6b5b95                 1         1         1       74m
+replicaset.apps/nginx01-59f7bdf6b9              1         1         1       62m
+#M#
+
+
+#####
+#M#kubectl get rc
+NAME           DESIRED   CURRENT   READY   AGE
+webserver-rc   5         5         5       2d21h
+#M#kubectl get rs
+NAME                            DESIRED   CURRENT   READY   AGE
+apache2-deployment-6799d467bf   3         3         0       26h
+hello-world-bcf65bd46           1         1         1       3m53s
+nagios-xi-fbbd4cc7              5         5         5       3d2h
+nginx-cdb6b5b95                 1         1         1       76m
+nginx01-59f7bdf6b9              1         1         1       64m
+#M#
+
+#M#kubectl get rc
+NAME           DESIRED   CURRENT   READY   AGE
+webserver-rc   5         5         5       2d21h
+#M#kubectl get rs
+NAME                            DESIRED   CURRENT   READY   AGE
+apache2-deployment-6799d467bf   3         3         0       26h
+hello-world-bcf65bd46           1         1         1       3m53s
+nagios-xi-fbbd4cc7              5         5         5       3d2h
+nginx-cdb6b5b95                 1         1         1       76m
+nginx01-59f7bdf6b9              1         1         1       64m
+#M#kubectl get pod
+NAME                                  READY   STATUS             RESTARTS   AGE
+apache2-deployment-6799d467bf-2njps   0/1     ImagePullBackOff   0          3h6m
+apache2-deployment-6799d467bf-clr4h   0/1     ImagePullBackOff   0          26h
+apache2-deployment-6799d467bf-zvgfg   0/1     ImagePullBackOff   0          3h6m
+hello-world-bcf65bd46-pfmc2           1/1     Running            0          5m14s
+nagios-xi-fbbd4cc7-2qj9w              1/1     Running            0          3h6m
+nagios-xi-fbbd4cc7-668cd              1/1     Running            0          3d2h
+nagios-xi-fbbd4cc7-7kh9s              1/1     Running            0          3h6m
+nagios-xi-fbbd4cc7-br6t5              1/1     Running            0          3d2h
+nagios-xi-fbbd4cc7-c82zm              1/1     Running            0          3d2h
+nginx-cdb6b5b95-4mjdc                 1/1     Running            0          78m
+nginx01-59f7bdf6b9-rbmqr              1/1     Running            0          65m
+webserver-rc-gnzjj                    1/1     Running            0          2d21h
+webserver-rc-lgr7v                    1/1     Running            0          3h6m
+webserver-rc-plw6f                    1/1     Running            0          3h6m
+webserver-rc-q8zbq                    1/1     Running            0          2d21h
+webserver-rc-wcvdj                    1/1     Running            0          2d21h
+#M#kubectl expose rc hello-world --port=8080 --type=LoadBalancer
+Error from server (NotFound): replicationcontrollers "hello-world" not found
+#M#kubectl expose rs hello-world --port=8080 --type=LoadBalancer
+Error from server (NotFound): replicasets.extensions "hello-world" not found
+#M#kubectl expose rc hello-world --port=8080 --type=LoadBalancer
+Error from server (NotFound): replicationcontrollers "hello-world" not found
+#M#kubectl get rc
+NAME           DESIRED   CURRENT   READY   AGE
+webserver-rc   5         5         5       2d21h
+#M#kubectl get rs
+NAME                            DESIRED   CURRENT   READY   AGE
+apache2-deployment-6799d467bf   3         3         0       26h
+hello-world-bcf65bd46           1         1         1       10m
+nagios-xi-fbbd4cc7              5         5         5       3d2h
+nginx-cdb6b5b95                 1         1         1       82m
+nginx01-59f7bdf6b9              1         1         1       70m
+#M#kubectl expose  deployment  hello-world --port=8080 --type=LoadBalancer
+service/hello-world exposed
+#M#kubectl get service
+NAME               TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+apache2-server     LoadBalancer   10.97.159.202    <pending>     80:30910/TCP     27h
+hello-world        LoadBalancer   10.110.16.122    <pending>     8080:32124/TCP   88s
+kubernetes         ClusterIP      10.96.0.1        <none>        443/TCP          5d14h
+nagios-service     NodePort       10.110.6.76      <none>        80:32264/TCP     3d2h
+nginx              NodePort       10.107.156.167   <none>        80:30744/TCP     48m
+nginx01            NodePort       10.108.67.217    <none>        80:31571/TCP     49m
+webpod-service     NodePort       10.102.100.202   <none>        80:30001/TCP     3d1h
+webserver-server   NodePort       10.102.70.19     <none>        80:30002/TCP     2d1h
+#M#
+
+
+############
+#M#kubectl get service
+NAME               TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+apache2-server     LoadBalancer   10.97.159.202    <pending>     80:30910/TCP     27h
+hello-world        LoadBalancer   10.110.16.122    <pending>     8080:32124/TCP   4m59s
+kubernetes         ClusterIP      10.96.0.1        <none>        443/TCP          5d14h
+nagios-service     NodePort       10.110.6.76      <none>        80:32264/TCP     3d2h
+nginx              NodePort       10.107.156.167   <none>        80:30744/TCP     52m
+nginx01            NodePort       10.108.67.217    <none>        80:31571/TCP     52m
+webpod-service     NodePort       10.102.100.202   <none>        80:30001/TCP     3d1h
+webserver-server   NodePort       10.102.70.19     <none>        80:30002/TCP     2d1h
+#M#kubectl delete hello-world
+error: resource(s) were provided, but no name, label selector, or --all flag specified
+#M#kubectl delete service hello-world
+service "hello-world" deleted
+#M#kubectl get service
+NAME               TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+apache2-server     LoadBalancer   10.97.159.202    <pending>     80:30910/TCP   27h
+kubernetes         ClusterIP      10.96.0.1        <none>        443/TCP        5d14h
+nagios-service     NodePort       10.110.6.76      <none>        80:32264/TCP   3d3h
+nginx              NodePort       10.107.156.167   <none>        80:30744/TCP   53m
+nginx01            NodePort       10.108.67.217    <none>        80:31571/TCP   53m
+webpod-service     NodePort       10.102.100.202   <none>        80:30001/TCP   3d1h
+webserver-server   NodePort       10.102.70.19     <none>        80:30002/TCP   2d1h
+#M#
+
+#M#kubectl describe pod hello-world-bcf65bd46-pfmc2
+Name:               hello-world-bcf65bd46-pfmc2
+Namespace:          default
+Priority:           0
+PriorityClassName:  <none>
+Node:               minion2.bc.ca/192.168.136.12
+Start Time:         Thu, 04 Oct 2018 12:40:27 -0700
+Labels:             pod-template-hash=bcf65bd46
+                    run=hello-world
+Annotations:        <none>
+Status:             Running
+IP:                 10.36.0.3
+Controlled By:      ReplicaSet/hello-world-bcf65bd46
+Containers:
+  hello-world:
+    Container ID:   docker://0a2cdafe04933e5d55b39215a94684438bcdfae2708d5a60044205f5b482196a
+    Image:          tutum/hello-world
+    Image ID:       docker-pullable://docker.io/tutum/hello-world@sha256:0d57def8055178aafb4c7669cbc25ec17f0acdab97cc587f30150802da8f8d85
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Thu, 04 Oct 2018 12:40:32 -0700
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-8lppb (ro)
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
+Volumes:
+  default-token-8lppb:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-8lppb
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type    Reason     Age   From                    Message
+  ----    ------     ----  ----                    -------
+  Normal  Scheduled  19m   default-scheduler       Successfully assigned default/hello-world-bcf65bd46-pfmc2 to minion2.bc.ca
+  Normal  Pulling    19m   kubelet, minion2.bc.ca  pulling image "tutum/hello-world"
+  Normal  Pulled     19m   kubelet, minion2.bc.ca  Successfully pulled image "tutum/hello-world"
+  Normal  Created    19m   kubelet, minion2.bc.ca  Created container
+  Normal  Started    19m   kubelet, minion2.bc.ca  Started container
+#M#
 
