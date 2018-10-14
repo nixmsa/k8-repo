@@ -124,3 +124,70 @@ Persistant Storage
 Persistant Storage----2
 / # 
 
+
+[root@minik Docker]# docker push nixmsa/storage
+The push refers to repository [docker.io/nixmsa/storage]
+An image does not exist locally with the tag: nixmsa/storage
+[root@minik Docker]# docker tag storage nixmsa/storage:1.1
+[root@minik Docker]# docker push nixmsa/storage
+The push refers to repository [docker.io/nixmsa/storage]
+8a788232037e: Mounted from library/busybox
+1.1: digest: sha256:fe64a7b34ea585f6248fede958a43361f916ac46141aef8ef794efd7cf2d477b size: 527
+[root@minik Docker]#
+
+
+###Persistant Host Based ###
+
+[root@minik ~]# cd
+[root@minik ~]# mkdir -p /var/docker/disk01
+[root@minik ~]# echo "persistant storage" >> /var/docker/disk01/test1.txt
+[root@minik ~]# docker run -it -v /var/docker/disk01/:/mnt centos /bin/bash
+[root@60071a205c88 /]#
+
+[root@minik ~]# cd
+[root@minik ~]# mkdir -p /var/docker/disk01
+[root@minik ~]# echo "persistant storage" >> /var/docker/disk01/test1.txt
+[root@minik ~]# docker run -it -v /var/docker/disk01/:/mnt centos /bin/bash
+[root@60071a205c88 /]# df -h
+Filesystem               Size  Used Avail Use% Mounted on
+overlay                   35G  7.5G   28G  22% /
+tmpfs                     64M     0   64M   0% /dev
+tmpfs                    7.8G     0  7.8G   0% /sys/fs/cgroup
+/dev/mapper/centos-root   35G  7.5G   28G  22% /mnt
+shm                       64M     0   64M   0% /dev/shm
+tmpfs                    7.8G     0  7.8G   0% /proc/acpi
+tmpfs                    7.8G     0  7.8G   0% /proc/scsi
+tmpfs                    7.8G     0  7.8G   0% /sys/firmware
+[root@60071a205c88 /]# ls /mnt/
+test1.txt
+[root@60071a205c88 /]# cat /mnt/test1.txt
+persistant storage
+[root@60071a205c88 /]#
+
+
+### composr mysql ###
+FROM  centos
+MAINTAINER Muhammad nixmsa@gmail.com
+RUN yum -y update
+RUN yum -y install httpd
+
+EXPOSE 80
+CMD ["/usr/sbin/apachectl", "-D" "FOREGROUND"]
+
+
+[root@minik compose-mysql]# docker-compose up -d
+Starting compose-mysql_web_1 ... done
+Starting compose-mysql_db_1  ... done
+[root@minik compose-mysql]#
+
+[root@minik compose-mysql]# docker-compose up -d
+Starting compose-mysql_web_1 ... done
+Starting compose-mysql_db_1  ... done
+[root@minik compose-mysql]# docker-compose ps
+       Name                      Command                State             Ports
+----------------------------------------------------------------------------------------
+compose-mysql_db_1    docker-entrypoint.sh mysqld      Up         0.0.0.0:3306->3306/tcp
+compose-mysql_web_1   /bin/sh -c ["/usr/sbin/apa ...   Exit 127
+[root@minik compose-mysql]#
+
+
