@@ -1,0 +1,126 @@
+[root@minik Storage]# ls
+Dockerfile
+[root@minik Storage]# cat Dockerfile
+FROM busybox
+MAINTAINER Muhammad nixmsa@gmail.com
+
+Volume /storage
+CMD /bin/sh
+
+[root@minik Storage]# docker build -t storage .
+Sending build context to Docker daemon  2.048kB
+Step 1/4 : FROM busybox
+latest: Pulling from library/busybox
+90e01955edcd: Pull complete
+Digest: sha256:2a03a6059f21e150ae84b0973863609494aad70f0a80eaeb64bddd8d92465812
+Status: Downloaded newer image for busybox:latest
+ ---> 59788edf1f3e
+Step 2/4 : MAINTAINER Muhammad nixmsa@gmail.com
+ ---> Running in a8b5152a0c42
+Removing intermediate container a8b5152a0c42
+ ---> 829780ad774d
+Step 3/4 : Volume /storage
+ ---> Running in 62aa39a63076
+Removing intermediate container 62aa39a63076
+ ---> 97797cf2cb77
+Step 4/4 : CMD /bin/sh
+ ---> Running in 585c5a10f8b9
+Removing intermediate container 585c5a10f8b9
+ ---> 5d2994048dd2
+Successfully built 5d2994048dd2
+Successfully tagged storage:latest
+[root@minik Storage]#
+
+
+
+root@minik Storage]# docker images;
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+storage             latest              5d2994048dd2        2 minutes ago       1.15MB
+nixmsa/msa-httpd    1.1                 4555ce63b8da        About an hour ago   332MB
+msa-httpd           latest              4555ce63b8da        About an hour ago   332MB
+centos              latest              75835a67d134        4 days ago          200MB
+busybox             latest              59788edf1f3e        12 days ago         1.15MB
+registry            latest              2e2f252f3c88        4 weeks ago         33.3MB
+[root@minik Storage]# docker image history storage
+IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT
+5d2994048dd2        2 minutes ago       /bin/sh -c #(nop)  CMD ["/bin/sh" "-c" "/bin…   0B
+97797cf2cb77        2 minutes ago       /bin/sh -c #(nop)  VOLUME [/storage]            0B
+829780ad774d        2 minutes ago       /bin/sh -c #(nop)  MAINTAINER Muhammad nixms…   0B
+59788edf1f3e        12 days ago         /bin/sh -c #(nop)  CMD ["sh"]                   0B
+<missing>           12 days ago         /bin/sh -c #(nop) ADD file:63eebd629a5f7558c…   1.15MB
+[root@minik Storage]#
+
+
+[root@minik Storage]# docker images;
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+storage             latest              5d2994048dd2        4 minutes ago       1.15MB
+msa-httpd           latest              4555ce63b8da        About an hour ago   332MB
+nixmsa/msa-httpd    1.1                 4555ce63b8da        About an hour ago   332MB
+centos              latest              75835a67d134        4 days ago          200MB
+busybox             latest              59788edf1f3e        12 days ago         1.15MB
+registry            latest              2e2f252f3c88        4 weeks ago         33.3MB
+[root@minik Storage]# docker run -i -t --name storage_server storage
+/ #           
+
+docker exec -it storage_server /bin/sh
+
+/ # df -h /storage/
+Filesystem                Size      Used Available Use% Mounted on
+/dev/mapper/centos-root
+                         35.0G      7.4G     27.6G  21% /storage
+
+
+ot@minik Storage]# docker run -it --name centos_server --volumes-from storage_server centos /bin/bash
+[root@8b9c4157379d /]# 
+
+
+[root@minik Storage]# docker run -it --name centos_server --volumes-from storage_server centos /bin/bash
+[root@8b9c4157379d /]# df -h
+Filesystem               Size  Used Avail Use% Mounted on
+overlay                   35G  7.5G   28G  22% /
+tmpfs                     64M     0   64M   0% /dev
+tmpfs                    7.8G     0  7.8G   0% /sys/fs/cgroup
+/dev/mapper/centos-root   35G  7.5G   28G  22% /storage
+shm                       64M     0   64M   0% /dev/shm
+tmpfs                    7.8G     0  7.8G   0% /proc/acpi
+tmpfs                    7.8G     0  7.8G   0% /proc/scsi
+tmpfs                    7.8G     0  7.8G   0% /sys/firmware
+[root@8b9c4157379d /]# echo "Persistant Storage" >> /storage/Testfile.txt
+[root@8b9c4157379d /]# echo "Persistant Storage----2" >> /storage/Testfile.txt
+[root@8b9c4157379d /]# ll storage/
+total 4
+-rw-r--r-- 1 root root 43 Oct 14 17:51 Testfile.txt
+[root@8b9c4157379d /]# 
+
+
+
+ot@minik ~]# docker start storage_server
+storage_server
+[root@minik ~]# docker attach storage_server
+/ # df -h
+Filesystem                Size      Used Available Use% Mounted on
+overlay                  35.0G      7.4G     27.6G  21% /
+tmpfs                    64.0M         0     64.0M   0% /dev
+tmpfs                     7.8G         0      7.8G   0% /sys/fs/cgroup
+/dev/mapper/centos-root
+                         35.0G      7.4G     27.6G  21% /storage
+/dev/mapper/centos-root
+                         35.0G      7.4G     27.6G  21% /etc/resolv.conf
+/dev/mapper/centos-root
+                         35.0G      7.4G     27.6G  21% /etc/hostname
+/dev/mapper/centos-root
+                         35.0G      7.4G     27.6G  21% /etc/hosts
+shm                      64.0M         0     64.0M   0% /dev/shm
+tmpfs                     7.8G         0      7.8G   0% /proc/acpi
+tmpfs                    64.0M         0     64.0M   0% /proc/kcore
+tmpfs                    64.0M         0     64.0M   0% /proc/keys
+tmpfs                    64.0M         0     64.0M   0% /proc/timer_list
+tmpfs                    64.0M         0     64.0M   0% /proc/timer_stats
+tmpfs                    64.0M         0     64.0M   0% /proc/sched_debug
+tmpfs                     7.8G         0      7.8G   0% /proc/scsi
+tmpfs                     7.8G         0      7.8G   0% /sys/firmware
+/ # cat storage/Testfile.txt 
+Persistant Storage
+Persistant Storage----2
+/ # 
+
