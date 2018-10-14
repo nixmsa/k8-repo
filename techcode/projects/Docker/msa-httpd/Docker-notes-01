@@ -171,4 +171,18 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 bd70e57ec7d9        registry            "/entrypoint.sh /etc…"   9 seconds ago       Up 8 seconds        0.0.0.0:5000->5000/tcp   registry
 [root@minik msa-httpd]#
 
+[root@minik msa-httpd]# docker run -d -p 80:80 --name msahttpd msa-httpd
+3e048850d6eaacc37aaa5fdbdd48768e3649f406a44b377f8a1feea369eb9662
+[root@minik msa-httpd]# docker ps -a --filter "name=msahttpd"
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                NAMES
+3e048850d6ea        msa-httpd           "/usr/sbin/httpd -D …"   6 seconds ago       Up 5 seconds        0.0.0.0:80->80/tcp   msahttpd
+[root@minik msa-httpd]#
+
+[root@minik msa-httpd]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                    NAMES3e048850d6ea        msa-httpd           "/usr/sbin/httpd -D …"   About a minute ago   Up About a minute   0.0.0.0:80->80/tcp       msahttpd65cdece74b51        e35c6769a4d5        "/use/sbin/httpd -D …"   9 minutes ago        Created             0.0.0.0:80->80/tcp       goofy_aryabhatae9443bb3e827        e35c6769a4d5        "/use/sbin/httpd -D …"   10 minutes ago       Created             0.0.0.0:80->80/tcp       focused_bose
+bd70e57ec7d9        registry            "/entrypoint.sh /etc…"   36 minutes ago       Up 36 minutes       0.0.0.0:5000->5000/tcp   registry
+[root@minik msa-httpd]# curl http://localhost
+Hello Dockefile Muhammad
+[root@minik msa-httpd]#
+
 
