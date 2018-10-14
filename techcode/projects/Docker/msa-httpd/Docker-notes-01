@@ -185,4 +185,23 @@ bd70e57ec7d9        registry            "/entrypoint.sh /etc…"   36 minutes ag
 Hello Dockefile Muhammad
 [root@minik msa-httpd]#
 
+####Docker PUSH####
+[root@minik msa-httpd]# docker login
+Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Username: nixmsa
+Password: 
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[root@minik msa-httpd]# 
+
+root@minik msa-httpd]# docker push nixmsa/msa-httpd:1.1
+The push refers to repository [docker.io/nixmsa/msa-httpd]
+3db75de61672: Pushed
+74c10974a419: Pushed
+f972d139738d: Mounted from library/centos
+1.1: digest: sha256:fd5f7b5839fd076843013c5fbc6f67e4fc37ec4b3342ea6447fa361f53122471 size: 948
+[root@minik msa-httpd]#
 
