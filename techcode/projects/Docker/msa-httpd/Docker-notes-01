@@ -1,0 +1,174 @@
+FROM centos
+MAINTAINER Muhammad Ahsan <nixmsa@gmail.com>
+RUN yum -y install httpd
+RUN echo "Hello Dockefile" > /var/www/html/index.html
+EXPOSE 80
+CMD ["-D", "FOREGROUND"]
+ENTRYPOINT ["/use/sbin/httpd"]
+
+
+[root@minik msa-httpd]# docker build -t msa-http:latest .
+Sending build context to Docker daemon  14.85kB
+Step 1/7 : FROM centos
+latest: Pulling from library/centos
+aeb7866da422: Pull complete
+Digest: sha256:67dad89757a55bfdfabec8abd0e22f8c7c12a1856514726470228063ed86593b
+Status: Downloaded newer image for centos:latest
+ ---> 75835a67d134
+Step 2/7 : MAINTAINER Muhammad Ahsan <nixmsa@gmail.com>
+ ---> Running in 530f333120eb
+Removing intermediate container 530f333120eb
+ ---> 5e0a509cbe1f
+Step 3/7 : RUN yum -y install httpd
+ ---> Running in 0e37bdde00b7
+Loaded plugins: fastestmirror, ovl
+Determining fastest mirrors
+ * base: mirror.it.ubc.ca
+ * extras: mirror.it.ubc.ca
+ * updates: mirror.it.ubc.ca
+Resolving Dependencies
+--> Running transaction check
+---> Package httpd.x86_64 0:2.4.6-80.el7.centos.1 will be installed
+--> Processing Dependency: httpd-tools = 2.4.6-80.el7.centos.1 for package: httpd-2.4.6-80.el7.centos.1.x86_64
+--> Processing Dependency: system-logos >= 7.92.1-1 for package: httpd-2.4.6-80.el7.centos.1.x86_64
+--> Processing Dependency: /etc/mime.types for package: httpd-2.4.6-80.el7.centos.1.x86_64
+--> Processing Dependency: libaprutil-1.so.0()(64bit) for package: httpd-2.4.6-80.el7.centos.1.x86_64
+--> Processing Dependency: libapr-1.so.0()(64bit) for package: httpd-2.4.6-80.el7.centos.1.x86_64
+--> Running transaction check
+---> Package apr.x86_64 0:1.4.8-3.el7_4.1 will be installed
+---> Package apr-util.x86_64 0:1.5.2-6.el7 will be installed
+---> Package centos-logos.noarch 0:70.0.6-3.el7.centos will be installed
+---> Package httpd-tools.x86_64 0:2.4.6-80.el7.centos.1 will be installed
+---> Package mailcap.noarch 0:2.1.41-2.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package           Arch        Version                       Repository    Size
+================================================================================
+Installing:
+ httpd             x86_64      2.4.6-80.el7.centos.1         updates      2.7 M
+Installing for dependencies:
+ apr               x86_64      1.4.8-3.el7_4.1               base         103 k
+ apr-util          x86_64      1.5.2-6.el7                   base          92 k
+ centos-logos      noarch      70.0.6-3.el7.centos           base          21 M
+ httpd-tools       x86_64      2.4.6-80.el7.centos.1         updates       90 k
+ mailcap           noarch      2.1.41-2.el7                  base          31 k
+
+Transaction Summary
+================================================================================
+Install  1 Package (+5 Dependent packages)
+
+Total download size: 24 M
+Installed size: 31 M
+Downloading packages:
+warning: /var/cache/yum/x86_64/7/base/packages/apr-1.4.8-3.el7_4.1.x86_64.rpm: Header V3 RSA/SHA256 Signature, key ID f4a80eb5: NOKEY
+Public key for apr-1.4.8-3.el7_4.1.x86_64.rpm is not installed
+Public key for httpd-2.4.6-80.el7.centos.1.x86_64.rpm is not installed
+--------------------------------------------------------------------------------
+Total                                              4.2 MB/s |  24 MB  00:05
+Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+Importing GPG key 0xF4A80EB5:
+ Userid     : "CentOS-7 Key (CentOS 7 Official Signing Key) <security@centos.org>"
+ Fingerprint: 6341 ab27 53d7 8a78 a7c2 7bb1 24c6 a8a7 f4a8 0eb5
+ Package    : centos-release-7-5.1804.4.el7.centos.x86_64 (@Updates)
+ From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : apr-1.4.8-3.el7_4.1.x86_64                                   1/6
+  Installing : apr-util-1.5.2-6.el7.x86_64                                  2/6
+  Installing : httpd-tools-2.4.6-80.el7.centos.1.x86_64                     3/6
+  Installing : centos-logos-70.0.6-3.el7.centos.noarch                      4/6
+  Installing : mailcap-2.1.41-2.el7.noarch                                  5/6
+  Installing : httpd-2.4.6-80.el7.centos.1.x86_64                           6/6
+  Verifying  : mailcap-2.1.41-2.el7.noarch                                  1/6
+  Verifying  : httpd-tools-2.4.6-80.el7.centos.1.x86_64                     2/6
+  Verifying  : apr-util-1.5.2-6.el7.x86_64                                  3/6
+  Verifying  : httpd-2.4.6-80.el7.centos.1.x86_64                           4/6
+  Verifying  : apr-1.4.8-3.el7_4.1.x86_64                                   5/6
+  Verifying  : centos-logos-70.0.6-3.el7.centos.noarch                      6/6
+
+Installed:
+  httpd.x86_64 0:2.4.6-80.el7.centos.1
+
+Dependency Installed:
+  apr.x86_64 0:1.4.8-3.el7_4.1
+  apr-util.x86_64 0:1.5.2-6.el7
+  centos-logos.noarch 0:70.0.6-3.el7.centos
+  httpd-tools.x86_64 0:2.4.6-80.el7.centos.1
+  mailcap.noarch 0:2.1.41-2.el7
+
+Complete!
+Removing intermediate container 0e37bdde00b7
+ ---> c2a2852a5392
+Step 4/7 : RUN echo "Hello Dockefile" > /var/www/html/index.html
+ ---> Running in 7a4facf9e5d2
+Removing intermediate container 7a4facf9e5d2
+ ---> 1be4dfcc0cf3
+Step 5/7 : EXPOSE 80
+ ---> Running in 1542f3253812
+Removing intermediate container 1542f3253812
+ ---> 5a26617caed4
+Step 6/7 : CMD ["-D", "FOREGROUND"]
+ ---> Running in aa7ba7da7407
+Removing intermediate container aa7ba7da7407
+ ---> 469d9d9881e2
+Step 7/7 : ENTRYPOINT ["/use/sbin/httpd"]
+ ---> Running in ca3b013e8337
+Removing intermediate container ca3b013e8337
+ ---> 66324533c694
+Successfully built 66324533c694
+Successfully tagged msa-http:latest
+[root@minik msa-httpd]#
+
+
+t@minik msa-httpd]# docker images;
+REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
+msa-http            latest              66324533c694        About a minute ago   332MB
+centos              latest              75835a67d134        4 days ago           200MB
+[root@minik msa-httpd]#
+
+#####
+[root@minik msa-httpd]# docker pull registry
+Using default tag: latest
+latest: Pulling from library/registry
+d6a5679aa3cf: Pull complete
+ad0eac849f8f: Pull complete
+2261ba058a15: Pull complete
+f296fda86f10: Pull complete
+bcd4a541795b: Pull complete
+Digest: sha256:5a156ff125e5a12ac7fdec2b90b7e2ae5120fa249cf62248337b6d04abc574c8
+Status: Downloaded newer image for registry:latest
+[root@minik msa-httpd]# docker images;
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+msa-http            latest              66324533c694        4 minutes ago       332MB
+centos              latest              75835a67d134        4 days ago          200MB
+registry            latest              2e2f252f3c88        4 weeks ago         33.3MB
+[root@minik msa-httpd]#
+
+[root@minik msa-httpd]# docker history registry
+IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT
+2e2f252f3c88        4 weeks ago         /bin/sh -c #(nop)  CMD ["/etc/docker/registr…   0B
+<missing>           4 weeks ago         /bin/sh -c #(nop)  ENTRYPOINT ["/entrypoint.…   0B
+<missing>           4 weeks ago         /bin/sh -c #(nop) COPY file:7b57f7ab1a8cf85c…   155B
+<missing>           4 weeks ago         /bin/sh -c #(nop)  EXPOSE 5000/tcp              0B
+<missing>           4 weeks ago         /bin/sh -c #(nop)  VOLUME [/var/lib/registry]   0B
+<missing>           4 weeks ago         /bin/sh -c #(nop) COPY file:6c4758d509045dc4…   295B
+<missing>           4 weeks ago         /bin/sh -c #(nop) COPY file:b99d4fe47ad1addf…   22.8MB
+<missing>           4 weeks ago         /bin/sh -c set -ex     && apk add --no-cache…   5.71MB
+<missing>           4 weeks ago         /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B
+<missing>           4 weeks ago         /bin/sh -c #(nop) ADD file:4b806a0c031f19a46…   4.82MB
+[root@minik msa-httpd]#
+
+
+root@minik msa-httpd]# docker run -dit -p 5000:5000 --name registry registry
+bd70e57ec7d979ed9f3f277fe471c4dae7c5b824f3fa84496ab9575eae5c7f03
+[root@minik msa-httpd]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+bd70e57ec7d9        registry            "/entrypoint.sh /etc…"   9 seconds ago       Up 8 seconds        0.0.0.0:5000->5000/tcp   registry
+[root@minik msa-httpd]#
+
+
