@@ -1,0 +1,205 @@
+root@mkb# kubectl delete --all pods --namespace=default
+pod "nsgios-xi-f89d4774d-jnmcg" deleted
+root@mkb# kubectl get pod;
+No resources found.
+root@mkb# kubectl run nginx01 --image=nginx --port=80
+kubectl run --generator=deployment/apps.v1beta1 is DEPRECATED and will be removed in a future version. Use kubectl create instead.
+deployment.apps/nginx01 created
+root@mkb# kubectl get pod;
+NAME                       READY   STATUS              RESTARTS   AGE
+nginx01-5747dd5b96-lngwq   0/1     ContainerCreating   0          12s
+root@mkb# kubectl get deployment;
+NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+nginx01   1         1         1            0           20s
+root@mkb# kubectl get service;
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   2m
+root@mkb# kubectl get pod;
+NAME                       READY   STATUS    RESTARTS   AGE
+nginx01-5747dd5b96-lngwq   1/1     Running   0          32s
+root@mkb# 
+
+
+          32s
+root@mkb# kubectl describe pod nginx01-5747dd5b96-lngwq
+Name:           nginx01-5747dd5b96-lngwq
+Namespace:      default
+Node:           minikube/10.0.2.15
+Start Time:     Mon, 15 Oct 2018 10:54:41 -0700
+Labels:         pod-template-hash=1303881652
+                run=nginx01
+Annotations:    <none>
+Status:         Running
+IP:             172.17.0.2
+Controlled By:  ReplicaSet/nginx01-5747dd5b96
+Containers:
+  nginx01:
+    Container ID:   docker://3c590b15e52791c82d6d7919370ade695583ab3788f5e31fca7f2b8dc0c00bb7
+    Image:          nginx
+    Image ID:       docker-pullable://nginx@sha256:9ad0746d8f2ea6df3a17ba89eca40b48c47066dfab55a75e08e2b70fc80d929e
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Mon, 15 Oct 2018 10:55:07 -0700
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from default-token-9kmxr (ro)
+Conditions:
+  Type           Status
+  Initialized    True 
+  Ready          True 
+  PodScheduled   True 
+Volumes:
+  default-token-9kmxr:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  default-token-9kmxr
+    Optional:    false
+QoS Class:       BestEffort
+Node-Selectors:  <none>
+Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
+                 node.kubernetes.io/unreachable:NoExecute for 300s
+Events:
+  Type    Reason                 Age   From               Message
+  ----    ------                 ----  ----               -------
+  Normal  Scheduled              20m   default-scheduler  Successfully assigned nginx01-5747dd5b96-lngwq to minikube
+  Normal  SuccessfulMountVolume  20m   kubelet, minikube  MountVolume.SetUp succeeded for volume "default-token-9kmxr"
+  Normal  Pulling                20m   kubelet, minikube  pulling image "nginx"
+  Normal  Pulled                 19m   kubelet, minikube  Successfully pulled image "nginx"
+  Normal  Created                19m   kubelet, minikube  Created container
+  Normal  Started                19m   kubelet, minikube  Started container
+########
+NEW POD###
+oot@mkb# kubectl get pod;
+NAME                       READY   STATUS    RESTARTS   AGE      cker-compose.yml
+nginx01-5747dd5b96-lngwq   1/1     Running   0          14m
+root@mkb# kubectl get rs
+NAME                 DESIRED   CURRENT   READY   AGE
+nginx01-5747dd5b96   1         1         1       15m
+root@mkb# kubectl expose deployment nginx01 --type=NodePort
+service/nginx01 exposed
+root@mkb# kubectl get services;
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)      AGE
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP      19m
+nginx01      NodePort    10.109.147.209   <none>        80:31017/TCP   21s
+
+oot@mkb# minikube service nginx01
+Opening kubernetes service default/nginx01 in default browser...
+root@mkb#   
+
+oot@mkb# kubectl get all
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/nginx01-5747dd5b96-lngwq   1/1     Running   0          21m
+
+NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+service/kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP        24m
+service/nginx01      NodePort    10.109.147.209   <none>        80:31017/TCP   4m
+
+NAME                      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/nginx01   1         1         1            1           21m
+
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/nginx01-5747dd5b96   
+
+#####
+kb# kubectl get deploy/nginx01 -o yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  creationTimestamp: 2018-10-15T17:54:40Z
+  generation: 1
+  labels:
+    run: nginx01
+  name: nginx01
+  namespace: default
+  resourceVersion: "26889"
+  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/nginx01
+  uid: 63c32115-d0a3-11e8-977b-0800272bdf29
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      run: nginx01
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: nginx01
+    spec:
+      containers:
+      - image: nginx
+        imagePullPolicy: Always
+        name: nginx01
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: 2018-10-15T17:55:09Z
+    lastUpdateTime: 2018-10-15T17:55:09Z
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: 2018-10-15T17:54:40Z
+    lastUpdateTime: 2018-10-15T17:55:09Z
+    message: ReplicaSet "nginx01-5747dd5b96" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
+root@mkb#
+
+####
+root@mkb# kubectl get service/nginx01 -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: 2018-10-15T18:11:44Z
+  labels:
+    run: nginx01
+  name: nginx01
+  namespace: default
+  resourceVersion: "27965"
+  selfLink: /api/v1/namespaces/default/services/nginx01
+  uid: c5bb8259-d0a5-11e8-977b-0800272bdf29
+spec:
+  clusterIP: 10.109.147.209
+  externalTrafficPolicy: Cluster
+  ports:
+  - nodePort: 31017
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: nginx01
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+
+
+#####
+
