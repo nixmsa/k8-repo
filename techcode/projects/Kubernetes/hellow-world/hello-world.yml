@@ -1,0 +1,14 @@
+apiVersion: v1 
+kind: Pod
+metadata:
+ name: hello-world
+
+spec:
+  containers:
+       
+    - name: hello-world
+      image: tutum/hello-world
+      ports:
+      - containerPort: 8080
+####
+##equal to : kubectl run hello-world --image=tutum/hello-world --port=8080
