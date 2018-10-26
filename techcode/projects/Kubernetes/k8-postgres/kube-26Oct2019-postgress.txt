@@ -1,0 +1,435 @@
+#M#kubectl create -f postgre-svc.yaml
+service/postgres created
+#M#cat postgre-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+ name:  "postgres"
+ labels:
+   app: "postgres"
+spec:
+ ports:
+  #
+ - port: 5432
+ selector:
+  app: "postgres"
+
+#M#
+
+#M#kubectl get svc
+NAME          TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+hello-world   LoadBalancer   10.111.24.57     <pending>     80:31219/TCP   40h
+kubernetes    ClusterIP      10.96.0.1        <none>        443/TCP        42h
+mysql         ClusterIP      10.97.143.134    <none>        3306/TCP       23h
+postgres      ClusterIP      10.100.146.161   <none>        5432/TCP       43s
+
+#M#kubectl describe  svc postgres
+Name:              postgres
+Namespace:         default
+Labels:            app=postgres
+Annotations:       <none>
+Selector:          app=postgres
+Type:              ClusterIP
+IP:                10.100.146.161
+Port:              <unset>  5432/TCP
+TargetPort:        5432/TCP
+Endpoints:         <none>
+Session Affinity:  None
+Events:            <none>
+#M#
+
+#M#kubectl create -f postgres-rc.yaml
+replicationcontroller/postgres created
+#M#cat postgres-rc.yaml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+ name: "postgres"
+ labels:
+  app: "postgres"
+spec:
+  replicas: 2
+  selector:
+    app: "postgres"
+  template:
+    metadata:
+      labels:
+        app: "postgres"
+    spec:
+     containers:
+     - image:  "postgres"
+       name:  postgres
+
+#M#
+
+#M#kubectl get rc
+NAME          DESIRED   CURRENT   READY   AGE
+hello-world   2         2         2       39h
+postgres      2         2         0       37s
+#M#kubectl get rc -o wide
+NAME          DESIRED   CURRENT   READY   AGE   CONTAINERS    IMAGES              SELECTOR
+hello-world   2         2         2       39h   hello-world   tutum/hello-world   app=hello-world,rack=r1,region=CA,version=1.1
+postgres      2         2         1       42s   postgres      postgres            app=postgres
+#M#
+
+#M#kubectl get pod -o wide
+NAME                READY   STATUS      RESTARTS   AGE   IP          NODE            NOMINATED NODE
+hello-world-4cg8v   1/1     Running     0          39h   10.36.0.2   minion2.bc.ca   <none>
+hello-world-hvgnw   1/1     Running     0          39h   10.44.0.1   minion1.bc.ca   <none>
+hellow-world2       0/1     Completed   0          26h   10.36.0.1   minion2.bc.ca   <none>
+postgres-227rj      1/1     Running     0          90s   10.44.0.2   minion1.bc.ca   <none>
+postgres-hq7h9      1/1     Running     0          90s   10.36.0.3   minion2.bc.ca   <none>
+#M#
+
+#M#kubectl get all
+NAME                    READY   STATUS      RESTARTS   AGE
+pod/hello-world-4cg8v   1/1     Running     0          39h
+pod/hello-world-hvgnw   1/1     Running     0          39h
+pod/hellow-world2       0/1     Completed   0          26h
+pod/postgres-227rj      1/1     Running     0          112s
+pod/postgres-hq7h9      1/1     Running     0          112s
+
+NAME                                DESIRED   CURRENT   READY   AGE
+replicationcontroller/hello-world   2         2         2       39h
+replicationcontroller/postgres      2         2         2       113s
+
+NAME                  TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+service/hello-world   LoadBalancer   10.111.24.57     <pending>     80:31219/TCP   42h
+service/kubernetes    ClusterIP      10.96.0.1        <none>        443/TCP        44h
+service/mysql         ClusterIP      10.97.143.134    <none>        3306/TCP       25h
+service/postgres      ClusterIP      10.100.146.161   <none>        5432/TCP       108m
+#M#
+#M#kubectl describe rc postgres
+Name:         postgres
+Namespace:    default
+Selector:     app=postgres
+Labels:       app=postgres
+Annotations:  <none>
+Replicas:     2 current / 2 desired
+Pods Status:  2 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  app=postgres
+  Containers:
+   postgres:
+    Image:        postgres
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Events:
+  Type    Reason            Age    From                    Message
+  ----    ------            ----   ----                    -------
+  Normal  SuccessfulCreate  2m52s  replication-controller  Created pod: postgres-227rj
+  Normal  SuccessfulCreate  2m52s  replication-controller  Created pod: postgres-hq7h9
+#M#
+
+
+#M#kubectl get pod -o wide
+NAME                READY   STATUS      RESTARTS   AGE    IP          NODE            NOMINATED NODE
+hello-world-4cg8v   1/1     Running     0          39h    10.36.0.2   minion2.bc.ca   <none>
+hello-world-hvgnw   1/1     Running     0          39h    10.44.0.1   minion1.bc.ca   <none>
+hellow-world2       0/1     Completed   0          26h    10.36.0.1   minion2.bc.ca   <none>
+postgres-227rj      1/1     Running     0          6m8s   10.44.0.2   minion1.bc.ca   <none>
+postgres-hq7h9      1/1     Running     0          6m8s   10.36.0.3   minion2.bc.ca   <none>
+#M#kubectl exec postgres-227rj -c postgres -i -t -- bash
+root@postgres-227rj:/#
+
+root@postgres-227rj:/# su -l postgres
+postgres@postgres-227rj:~$ id
+uid=999(postgres) gid=999(postgres) groups=999(postgres),103(ssl-cert)
+postgres@postgres-227rj:~$ psql postgres
+psql (11.0 (Debian 11.0-1.pgdg90+2))
+Type "help" for help.
+
+postgres=#
+
+postgres=# CREATE TABLE wlslog(time_stamp VARCHAR(255) PRIMARY KEY, category VARCHAR(255), type VARCHAR(255), servername VARCHAR(255), code VARCHAR(255), msg VARCHAR(244));
+CREATE TABLE
+postgres=#
+
+postgres=# CREATE TABLE wlslog(time_stamp VARCHAR(255) PRIMARY KEY, category VARCHAR(255), type VARCHAR(255), servername VARCHAR(255), code VARCHAR(255), msg VARCHAR(244));
+CREATE TABLE
+postgres=# INSERT INTO wlslog(time_stamp,category,type,servername,code,msg) VALUES('Apr-8-2018:6:17-PM-PDT','Notice','WeblogicServer','AdminServer', 'BEA-000365', 'Server state changed  to starting');
+INSERT 0 1
+postgres=# INSERT INTO wlslog(time_stamp,category,type,servername,code,msg) VALUES('Apr-8-2018:6:17-PM-PDT','Notice','WeblogicServer','AdminServer', 'BEA-000363', 'Server state   to starting');
+ERROR:  duplicate key value violates unique constraint "wlslog_pkey"
+DETAIL:  Key (time_stamp)=(Apr-8-2018:6:17-PM-PDT) already exists.
+postgres=# INSERT INTO wlslog(time_stamp,category,type,servername,code,msg) VALUES('Apr-9-2018:6:17-PM-PDT','Notice','WeblogicServer','AdminServer', 'BEA-000363', 'Server state   to starting');
+INSERT 0 1
+postgres=# INSERT INTO wlslog(time_stamp,category,type,servername,code,msg) VALUES('Apr-19-2018:6:17-PM-PDT','Notice','WeblogicServer','AdminServer', 'BEA-000363', 'Server state   to starting');
+INSERT 0 1
+postgres=#
+
+postgres=# SELECT * FROM wlslog;
+       time_stamp        | category |      type      | servername  |    code    |                msg
+-------------------------+----------+----------------+-------------+------------+-----------------------------------
+ Apr-8-2018:6:17-PM-PDT  | Notice   | WeblogicServer | AdminServer | BEA-000365 | Server state changed  to starting
+ Apr-9-2018:6:17-PM-PDT  | Notice   | WeblogicServer | AdminServer | BEA-000363 | Server state   to starting
+ Apr-19-2018:6:17-PM-PDT | Notice   | WeblogicServer | AdminServer | BEA-000363 | Server state   to starting
+(3 rows)
+
+postgres=
+
+
+postgres=# \q
+postgres@postgres-227rj:~$ exit
+logout
+root@postgres-227rj:/#
+
+
+postgres=# \q
+postgres@postgres-227rj:~$ exit
+logout
+root@postgres-227rj:/# exit
+exit
+
+#M#kubectl get rc -o wide;
+NAME          DESIRED   CURRENT   READY   AGE   CONTAINERS    IMAGES              SELECTOR
+hello-world   2         2         2       40h   hello-world   tutum/hello-world   app=hello-world,rack=r1,region=CA,version=1.1
+postgres      2         2         2       23m   postgres      postgres            app=postgres
+#M#kubectl scale rc postgres --replicas=4
+replicationcontroller/postgres scaled
+#M#kubectl get rc -o wide;
+NAME          DESIRED   CURRENT   READY   AGE   CONTAINERS    IMAGES              SELECTOR
+hello-world   2         2         2       40h   hello-world   tutum/hello-world   app=hello-world,rack=r1,region=CA,version=1.1
+postgres      4         4         2       24m   postgres      postgres            app=postgres
+#M#
+
+
+#M#kubectl get pods -o wide;
+NAME                READY   STATUS      RESTARTS   AGE   IP          NODE            NOMINATED NODE
+hello-world-4cg8v   1/1     Running     0          40h   10.36.0.2   minion2.bc.ca   <none>
+hello-world-hvgnw   1/1     Running     0          40h   10.44.0.1   minion1.bc.ca   <none>
+hellow-world2       0/1     Completed   0          26h   10.36.0.1   minion2.bc.ca   <none>
+postgres-227rj      1/1     Running     0          25m   10.44.0.2   minion1.bc.ca   <none>
+postgres-4cclf      1/1     Running     0          59s   10.44.0.3   minion1.bc.ca   <none>
+postgres-hq7h9      1/1     Running     0          25m   10.36.0.3   minion2.bc.ca   <none>
+postgres-qb958      1/1     Running     0          59s   10.36.0.4   minion2.bc.ca   <none>
+#M#
+
+#M#kubectl get pods -o wide;
+NAME                READY   STATUS      RESTARTS   AGE   IP          NODE            NOMINATED NODE
+hello-world-4cg8v   1/1     Running     0          40h   10.36.0.2   minion2.bc.ca   <none>
+hello-world-hvgnw   1/1     Running     0          40h   10.44.0.1   minion1.bc.ca   <none>
+hellow-world2       0/1     Completed   0          26h   10.36.0.1   minion2.bc.ca   <none>
+postgres-227rj      1/1     Running     0          25m   10.44.0.2   minion1.bc.ca   <none>
+postgres-4cclf      1/1     Running     0          59s   10.44.0.3   minion1.bc.ca   <none>
+postgres-hq7h9      1/1     Running     0          25m   10.36.0.3   minion2.bc.ca   <none>
+postgres-qb958      1/1     Running     0          59s   10.36.0.4   minion2.bc.ca   <none>
+#M#kubectl describe svc postgres
+Name:              postgres
+Namespace:         default
+Labels:            app=postgres
+Annotations:       <none>
+Selector:          app=postgres
+Type:              ClusterIP
+IP:                10.100.146.161
+Port:              <unset>  5432/TCP
+TargetPort:        5432/TCP
+Endpoints:         10.36.0.3:5432,10.36.0.4:5432,10.44.0.2:5432 + 1 more...
+Session Affinity:  None
+Events:            <none>
+#M#
+
+
+
+#M#kubectl get pods -o wide;
+NAME                READY   STATUS      RESTARTS   AGE   IP          NODE            NOMINATED NODE
+hello-world-4cg8v   1/1     Running     0          40h   10.36.0.2   minion2.bc.ca   <none>
+hello-world-hvgnw   1/1     Running     0          40h   10.44.0.1   minion1.bc.ca   <none>
+hellow-world2       0/1     Completed   0          26h   10.36.0.1   minion2.bc.ca   <none>
+postgres-227rj      1/1     Running     0          25m   10.44.0.2   minion1.bc.ca   <none>
+postgres-4cclf      1/1     Running     0          59s   10.44.0.3   minion1.bc.ca   <none>
+postgres-hq7h9      1/1     Running     0          25m   10.36.0.3   minion2.bc.ca   <none>
+postgres-qb958      1/1     Running     0          59s   10.36.0.4   minion2.bc.ca   <none>
+#M#kubectl describe svc postgres
+Name:              postgres
+Namespace:         default
+Labels:            app=postgres
+Annotations:       <none>
+Selector:          app=postgres
+Type:              ClusterIP
+IP:                10.100.146.161
+Port:              <unset>  5432/TCP
+TargetPort:        5432/TCP
+Endpoints:         10.36.0.3:5432,10.36.0.4:5432,10.44.0.2:5432 + 1 more...
+Session Affinity:  None
+Events:            <none>
+#M#kubectl exec postgres-qb958 -c postgress -i -t -- bash
+Error from server (BadRequest): container postgress is not valid for pod postgres-qb958
+#M#kubectl exec postgres-qb958 -c postgres -i -t -- bash
+root@postgres-qb958:/# su -l postgres
+postgres@postgres-qb958:~$
+
+root@postgres-qb958:/# su -l postgres
+postgres@postgres-qb958:~$ id
+uid=999(postgres) gid=999(postgres) groups=999(postgres),103(ssl-cert)
+postgres@postgres-qb958:~$ psql postgres
+psql (11.0 (Debian 11.0-1.pgdg90+2))
+Type "help" for help.
+
+postgres=# SELECT * FROM wlslog;
+ERROR:  relation "wlslog" does not exist
+LINE 1: SELECT * FROM wlslog;
+                      ^
+postgres=# SELECT * FROM cat;
+ERROR:  relation "cat" does not exist
+LINE 1: SELECT * FROM cat;
+                      ^
+postgres=# SELECT * FROM tab;
+ERROR:  relation "tab" does not exist
+LINE 1: SELECT * FROM tab;
+                      ^
+postgres=#
+
+
+#M#kubectl exec postgres-227rj -c postgres -i -t -- bash
+root@postgres-227rj:/# su -l postgres
+postgres@postgres-227rj:~$ psql postgres
+psql (11.0 (Debian 11.0-1.pgdg90+2))
+Type "help" for help.
+
+postgres=#  SELECT * FROM wlslog;
+       time_stamp        | category |      type      | servername  |    code    |                msg
+-------------------------+----------+----------------+-------------+------------+-----------------------------------
+ Apr-8-2018:6:17-PM-PDT  | Notice   | WeblogicServer | AdminServer | BEA-000365 | Server state changed  to starting
+ Apr-9-2018:6:17-PM-PDT  | Notice   | WeblogicServer | AdminServer | BEA-000363 | Server state   to starting
+ Apr-19-2018:6:17-PM-PDT | Notice   | WeblogicServer | AdminServer | BEA-000363 | Server state   to starting
+(3 rows)
+
+postgres=#
+
+Note: that show every container and pods have their own data no duplication 
+
+#M#kubectl logs postgres-227rj
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+The database cluster will be initialized with locale "en_US.utf8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+Data page checksums are disabled.
+fixing permissions on existing directory /var/lib/postgresql/data ... ok
+creating subdirectories ... ok
+selecting default max_connections ... 100
+selecting default shared_buffers ... 128MB
+selecting dynamic shared memory implementation ... posix
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+WARNING: enabling "trust" authentication for local connections
+You can change this by editing pg_hba.conf or using the option -A, or
+#NAME?
+syncing data to disk ... ok
+Success. You can now start the database server using:
+    pg_ctl -D /var/lib/postgresql/data -l logfile start
+****************************************************
+WARNING: No password has been set for the database.
+         This will allow anyone with access to the
+         Postgres port to access your database. In
+         Docker's default configuration, this is
+         effectively any other container on the same
+         system.
+         Use "-e POSTGRES_PASSWORD=password" to set
+         it in "docker run".
+****************************************************
+waiting for server to start....2018-10-22 19:49:47.011 UTC [39] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2018-10-22 19:49:47.119 UTC [40] LOG:  database system was shut down at 2018-10-22 19:49:45 UTC
+2018-10-22 19:49:47.148 UTC [39] LOG:  database system is ready to accept connections
+ done
+server started
+/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+2018-10-22 19:49:47.230 UTC [39] LOG:  received fast shutdown request
+waiting for server to shut down....2018-10-22 19:49:47.232 UTC [39] LOG:  aborting any active transactions
+2018-10-22 19:49:47.254 UTC [39] LOG:  background worker "logical replication launcher" (PID 46) exited with exit code 1
+2018-10-22 19:49:47.260 UTC [41] LOG:  shutting down
+2018-10-22 19:49:47.288 UTC [39] LOG:  database system is shut down
+ done
+server stopped
+PostgreSQL init process complete; ready for start up.
+2018-10-22 19:49:47.380 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2018-10-22 19:49:47.380 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2018-10-22 19:49:47.386 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2018-10-22 19:49:47.415 UTC [48] LOG:  database system was shut down at 2018-10-22 19:49:47 UTC
+2018-10-22 19:49:47.428 UTC [1] LOG:  database system is ready to accept connections
+2018-10-22 20:06:22.436 UTC [71] ERROR:  duplicate key value violates unique constraint "wlslog_pkey"
+2018-10-22 20:06:22.436 UTC [71] DETAIL:  Key (time_stamp)=(Apr-8-2018:6:17-PM-PDT) already exists.
+2018-10-22 20:06:22.436 UTC [71] STATEMENT:  INSERT INTO wlslog(time_stamp,category,type,servername,code,msg) VALUES('Apr-8-2018:6:17-PM-PDT','Notice','WeblogicServer','AdminServer', 'BEA-000363', 'Server state   to starting');
+#M#
+
+#M#kubectl get rc -o wide
+NAME          DESIRED   CURRENT   READY   AGE   CONTAINERS    IMAGES              SELECTOR
+hello-world   2         2         2       40h   hello-world   tutum/hello-world   app=hello-world,rack=r1,region=CA,version=1.1
+postgres      4         4         4       71m   postgres      postgres            app=postgres
+#M#kubectl delete rc postgres
+replicationcontroller "postgres" deleted
+#M#kubectl get rc -o wide
+NAME          DESIRED   CURRENT   READY   AGE   CONTAINERS    IMAGES              SELECTOR
+hello-world   2         2         2       40h   hello-world   tutum/hello-world   app=hello-world,rack=r1,region=CA,version=1.1
+#M#kubectl get pod -o wide
+NAME                READY   STATUS      RESTARTS   AGE   IP          NODE            NOMINATED NODE
+hello-world-4cg8v   1/1     Running     0          40h   10.36.0.2   minion2.bc.ca   <none>
+hello-world-hvgnw   1/1     Running     0          40h   10.44.0.1   minion1.bc.ca   <none>
+hellow-world2       0/1     Completed   0          27h   10.36.0.1   minion2.bc.ca   <none>
+#M#
+
+Note: replicataController deletion also delete pods as well
+
+#M#kubectl get service
+NAME          TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+hello-world   LoadBalancer   10.111.24.57     <pending>     80:31219/TCP   44h
+kubernetes    ClusterIP      10.96.0.1        <none>        443/TCP        45h
+mysql         ClusterIP      10.97.143.134    <none>        3306/TCP       26h
+postgres      ClusterIP      10.100.146.161   <none>        5432/TCP       3h5m
+#M#kubectl delete service postgres
+service "postgres" deleted
+#M#kubectl get service
+NAME          TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+hello-world   LoadBalancer   10.111.24.57    <pending>     80:31219/TCP   44h
+kubernetes    ClusterIP      10.96.0.1       <none>        443/TCP        45h
+mysql         ClusterIP      10.97.143.134   <none>        3306/TCP       26h
+#M#
+
+#################
+POSTGRES CLUSTER
+#################
+
+#M#kubectl run postgres --image=postgres --replicas=2 --port=5432
+kubectl run --generator=deployment/apps.v1beta1 is DEPRECATED and will be removed in a future version. Use kubectl create instead.
+deployment.apps/postgres created
+#M#
+
+#M#kubectl get all
+NAME                            READY   STATUS      RESTARTS   AGE
+pod/hello-world-4cg8v           1/1     Running     0          41h
+pod/hello-world-hvgnw           1/1     Running     0          41h
+pod/hellow-world2               0/1     Completed   0          27h
+pod/postgres-5c95b7bcdd-ccfwn   1/1     Running     0          116s
+pod/postgres-5c95b7bcdd-nrwqz   1/1     Running     0          116s
+
+NAME                                DESIRED   CURRENT   READY   AGE
+replicationcontroller/hello-world   2         2         2       41h
+
+NAME                  TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+service/hello-world   LoadBalancer   10.111.24.57    <pending>     80:31219/TCP   44h
+service/kubernetes    ClusterIP      10.96.0.1       <none>        443/TCP        46h
+service/mysql         ClusterIP      10.97.143.134   <none>        3306/TCP       26h
+
+NAME                       DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/postgres   2         2         2            2           116s
+
+NAME                                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/postgres-5c95b7bcdd   2         2         2       116s
+#M#
+
+#M#kubectl expose rs postgres-5c95b7bcdd --port=5342 --type=LoadBalancer
+service/postgres-5c95b7bcdd exposed
+#M#
+
+#M#kubectl get svc
+NAME                  TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+hello-world           LoadBalancer   10.111.24.57     <pending>     80:31219/TCP     44h
+kubernetes            ClusterIP      10.96.0.1        <none>        443/TCP          46h
+mysql                 ClusterIP      10.97.143.134    <none>        3306/TCP         26h
+postgres-5c95b7bcdd   LoadBalancer   10.107.215.111   <pending>     5342:31994/TCP   65s
+#M#
