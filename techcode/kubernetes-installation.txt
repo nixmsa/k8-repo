@@ -1,0 +1,1353 @@
+login as: root
+root@192.168.1.100's password:
+Last login: Sat Oct 27 20:24:54 2018 from 192.168.1.33
+[root@k8 ~]# ssh k1
+Last login: Sat Oct 27 20:34:23 2018 from k8.bc.ca
+[root@k1 ~]# ssh k2
+Last login: Sat Oct 27 20:35:27 2018 from k1.bc.ca
+[root@k2 ~]# exit
+logout
+Connection to k2 closed.
+[root@k1 ~]# exit
+logout
+Connection to k1 closed.
+[root@k8 ~]# ll
+total 12
+-rw-------. 1 root root 1518 Sep 30 01:22 anaconda-ks.cfg
+-rw-------  1 root root 1675 Oct 27 20:32 y
+-rw-r--r--  1 root root  395 Oct 27 20:32 y.pub
+[root@k8 ~]# [root@k8s-master ~]# cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+> > [kubernetes]
+> > name=Kubernetes
+> > baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+> > enabled=1
+> > gpgcheck=1
+> > repo_gpgcheck=1
+> > gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+> >         https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+> > EOF [root@k8s-master ~]#
+>
+> ^C
+[root@k8 ~]# vim /etc/yum.repos.d/kubernetes.repo
+[root@k8 ~]# scp /etc/yum.repos.d/kubernetes.repo k1:etc/yum.repos.d/kubernetes.repo
+scp: etc/yum.repos.d/kubernetes.repo: No such file or directory
+[root@k8 ~]# scp /etc/yum.repos.d/kubernetes.repo k1:/etc/yum.repos.d/kubernetes.repo
+kubernetes.repo                                                              100%  258   254.2KB/s   00:00
+[root@k8 ~]# scp /etc/yum.repos.d/kubernetes.repo k2:/etc/yum.repos.d/kubernetes.repo
+kubernetes.repo                                                              100%  258   237.6KB/s   00:00
+[root@k8 ~]# yum repolist
+Loaded plugins: fastestmirror, langpacks
+
+
+File contains parsing errors: file:///etc/yum.repos.d/kubernetes.repo
+        [line  2]: Kubernetes
+
+[root@k8 ~]# vim /etc/yum.repos.d/kubernetes.repo
+[root@k8 ~]# yum repolist
+Loaded plugins: fastestmirror, langpacks
+
+
+File contains parsing errors: file:///etc/yum.repos.d/kubernetes.repo
+        [line  2]: Kubernetes
+
+[root@k8 ~]# vim /etc/yum.repos.d/kubernetes.repo
+[root@k8 ~]# yum repolist
+Loaded plugins: fastestmirror, langpacks
+Repository 'kubernetes': Error parsing config: Error parsing "baseurl = 'ttps://packages.cloud.google.com/yum/r                                                         epos/kubernetes-el7-x86_64'": URL must be http, ftp, file or https not "ttps"
+Loading mirror speeds from cached hostfile
+^C^[[A^Z
+[1]+  Stopped                 yum repolist
+[root@k8 ~]# vim /etc/yum.repos.d/kubernetes.repo
+[root@k8 ~]# ps -ef | yum
+Loaded plugins: fastestmirror, langpacks
+You need to give some command
+Usage: yum [options] COMMAND
+
+List of Commands:
+
+check          Check for problems in the rpmdb
+check-update   Check for available package updates
+clean          Remove cached data
+deplist        List a package's dependencies
+distribution-synchronization Synchronize installed packages to the latest available versions
+downgrade      downgrade a package
+erase          Remove a package or packages from your system
+fs             Acts on the filesystem data of the host, mainly for removing docs/lanuages for minimal hosts.
+fssnapshot     Creates filesystem snapshots, or lists/deletes current snapshots.
+groups         Display, or use, the groups information
+help           Display a helpful usage message
+history        Display, or use, the transaction history
+info           Display details about a package or group of packages
+install        Install a package or packages on your system
+langavailable  Check available languages
+langinfo       List languages information
+langinstall    Install appropriate language packs for a language
+langlist       List installed languages
+langremove     Remove installed language packs for a language
+list           List a package or groups of packages
+load-transaction load a saved transaction from filename
+makecache      Generate the metadata cache
+provides       Find what package provides the given value
+reinstall      reinstall a package
+repo-pkgs      Treat a repo. as a group of packages, so we can install/remove all of them
+repolist       Display the configured software repositories
+search         Search package details for the given string
+shell          Run an interactive yum shell
+swap           Simple way to swap packages, instead of using shell
+update         Update a package or packages on your system
+update-minimal Works like upgrade, but goes to the 'newest' package match which fixes a problem that affects yo                                                         ur system
+updateinfo     Acts on repository update information
+upgrade        Update packages taking obsoletes into account
+version        Display a version for the machine and/or available repos.
+
+
+Options:
+  -h, --help            show this help message and exit
+  -t, --tolerant        be tolerant of errors
+  -C, --cacheonly       run entirely from system cache, don't update cache
+  -c [config file], --config=[config file]
+                        config file location
+  -R [minutes], --randomwait=[minutes]
+                        maximum command wait time
+  -d [debug level], --debuglevel=[debug level]
+                        debugging output level
+  --showduplicates      show duplicates, in repos, in list/search commands
+  -e [error level], --errorlevel=[error level]
+                        error output level
+  --rpmverbosity=[debug level name]
+                        debugging output level for rpm
+  -q, --quiet           quiet operation
+  -v, --verbose         verbose operation
+  -y, --assumeyes       answer yes for all questions
+  --assumeno            answer no for all questions
+  --version             show Yum version and exit
+  --installroot=[path]  set install root
+  --enablerepo=[repo]   enable one or more repositories (wildcards allowed)
+  --disablerepo=[repo]  disable one or more repositories (wildcards allowed)
+  -x [package], --exclude=[package]
+                        exclude package(s) by name or glob
+  --disableexcludes=[repo]
+                        disable exclude from main, for a repo or for
+                        everything
+  --disableincludes=[repo]
+                        disable includepkgs for a repo or for everything
+  --obsoletes           enable obsoletes processing during updates
+  --noplugins           disable Yum plugins
+  --nogpgcheck          disable gpg signature checking
+  --disableplugin=[plugin]
+                        disable plugins by name
+  --enableplugin=[plugin]
+                        enable plugins by name
+  --skip-broken         skip packages with depsolving problems
+  --color=COLOR         control whether color is used
+  --releasever=RELEASEVER
+                        set value of $releasever in yum config and repo files
+  --downloadonly        don't update, just download
+  --downloaddir=DLDIR   specifies an alternate directory to store packages
+  --setopt=SETOPTS      set arbitrary config and repo options
+  --bugfix              Include bugfix relevant packages, in updates
+  --security            Include security relevant packages, in updates
+  --advisory=ADVS, --advisories=ADVS
+                        Include packages needed to fix the given advisory, in
+                        updates
+  --bzs=BZS             Include packages needed to fix the given BZ, in
+                        updates
+  --cves=CVES           Include packages needed to fix the given CVE, in
+                        updates
+  --sec-severity=SEVS, --secseverity=SEVS
+                        Include security relevant packages matching the
+                        severity, in updates
+
+  Plugin Options:
+[root@k8 ~]# ps aux yum
+error: unsupported option (BSD syntax)
+
+Usage:
+ ps [options]
+
+ Try 'ps --help <simple|list|output|threads|misc|all>'
+  or 'ps --help <s|l|o|t|m|a>'
+ for additional help text.
+
+For more details see ps(1).
+[root@k8 ~]# ps -aux yum
+error: user name does not exist
+
+Usage:
+ ps [options]
+
+ Try 'ps --help <simple|list|output|threads|misc|all>'
+  or 'ps --help <s|l|o|t|m|a>'
+ for additional help text.
+
+For more details see ps(1).
+[root@k8 ~]# ps aux |grep yum
+root     20017  0.5  0.3 974220 29176 pts/0    Tl   00:53   0:00 /usr/bin/python /usr/bin/yum repolist
+root     20042  0.0  0.0 112704   972 pts/0    R+   00:54   0:00 grep --color=auto yum
+[root@k8 ~]# kill -9 20017
+[root@k8 ~]# ps aux |grep yum
+root     20044  0.0  0.0 112704   968 pts/0    R+   00:54   0:00 grep --color=auto yum
+[1]+  Killed                  yum repolist
+[root@k8 ~]# ip a^C
+[root@k8 ~]# yum repolist
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+ * base: mirror.its.sfu.ca
+ * epel: d2lzkl7pfhq30w.cloudfront.net
+ * extras: mirror.layeronline.com
+ * updates: mirror.its.sfu.ca
+kubernetes/signature                                                                    |  454 B  00:00:00
+Retrieving key from https://packages.cloud.google.com/yum/doc/yum-key.gpg
+Importing GPG key 0xA7317B0F:
+ Userid     : "Google Cloud Packages Automatic Signing Key <gc-team@google.com>"
+ Fingerprint: d0bc 747f d8ca f711 7500 d6fa 3746 c208 a731 7b0f
+ From       : https://packages.cloud.google.com/yum/doc/yum-key.gpg
+Is this ok [y/N]: y
+Retrieving key from https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+kubernetes/signature                                                                    | 1.4 kB  00:00:06 !!!
+kubernetes/primary                                                                      |  37 kB  00:00:00
+kubernetes                                                                                             272/272
+repo id                              repo name                                                           status
+base/7/x86_64                        CentOS-7 - Base                                                      9,911
+code                                 Visual Studio Code                                                      47
+*epel/x86_64                         Extra Packages for Enterprise Linux 7 - x86_64                      12,756
+extras/7/x86_64                      CentOS-7 - Extras                                                      432
+kubernetes                           Kubernetes                                                             272
+updates/7/x86_64                     CentOS-7 - Updates                                                   1,602
+repolist: 25,020
+[root@k8 ~]# scp /etc/yum.repos.d/kubernetes.repo k1:/etc/yum.repos.d/kubernetes.repo
+kubernetes.repo                                                              100%  271   264.2KB/s   00:00
+[root@k8 ~]# scp /etc/yum.repos.d/kubernetes.repo k2:/etc/yum.repos.d/kubernetes.repo
+kubernetes.repo                                                              100%  271   292.4KB/s   00:00
+[root@k8 ~]# ssh k1
+Last login: Sun Oct 28 00:47:38 2018 from k8.bc.ca
+[root@k1 ~]# yum repolist
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+ * base: mirror.its.sfu.ca
+ * extras: mirror.its.sfu.ca
+ * updates: mirror.its.sfu.ca
+base                                                                                    | 3.6 kB  00:00:00
+extras                                                                                  | 3.4 kB  00:00:00
+kubernetes/signature                                                                    |  454 B  00:00:00
+Retrieving key from https://packages.cloud.google.com/yum/doc/yum-key.gpg
+Importing GPG key 0xA7317B0F:
+ Userid     : "Google Cloud Packages Automatic Signing Key <gc-team@google.com>"
+ Fingerprint: d0bc 747f d8ca f711 7500 d6fa 3746 c208 a731 7b0f
+ From       : https://packages.cloud.google.com/yum/doc/yum-key.gpg
+Is this ok [y/N]: y
+Retrieving key from https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+kubernetes/signature                                                                    | 1.4 kB  00:00:01 !!!
+updates                                                                                 | 3.4 kB  00:00:00
+kubernetes/primary                                                                      |  37 kB  00:00:06
+kubernetes                                                                                             272/272
+repo id                                            repo name                                             status
+base/7/x86_64                                      CentOS-7 - Base                                       9,911
+extras/7/x86_64                                    CentOS-7 - Extras                                       432
+kubernetes                                         Kubernetes                                              272
+updates/7/x86_64                                   CentOS-7 - Updates                                    1,602
+repolist: 12,217
+[root@k1 ~]# exit
+logout
+Connection to k1 closed.
+[root@k8 ~]# ssh k2
+Last login: Sun Oct 28 00:47:42 2018 from k1.bc.ca
+[root@k2 ~]# yum repolist
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+ * base: mirror.its.sfu.ca
+ * extras: mirror.its.sfu.ca
+ * updates: mirror.its.sfu.ca
+base                                                                                    | 3.6 kB  00:00:00
+extras                                                                                  | 3.4 kB  00:00:00
+kubernetes/signature                                                                    |  454 B  00:00:00
+Retrieving key from https://packages.cloud.google.com/yum/doc/yum-key.gpg
+Importing GPG key 0xA7317B0F:
+ Userid     : "Google Cloud Packages Automatic Signing Key <gc-team@google.com>"
+ Fingerprint: d0bc 747f d8ca f711 7500 d6fa 3746 c208 a731 7b0f
+ From       : https://packages.cloud.google.com/yum/doc/yum-key.gpg
+Is this ok [y/N]: y
+Retrieving key from https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+kubernetes/signature                                                                    | 1.4 kB  00:00:01 !!!
+updates                                                                                 | 3.4 kB  00:00:00
+kubernetes/primary                                                                      |  37 kB  00:00:00
+kubernetes                                                                                             272/272
+repo id                                            repo name                                             status
+base/7/x86_64                                      CentOS-7 - Base                                       9,911
+extras/7/x86_64                                    CentOS-7 - Extras                                       432
+kubernetes                                         Kubernetes                                              272
+updates/7/x86_64                                   CentOS-7 - Updates                                    1,602
+repolist: 12,217
+[root@k2 ~]# exit
+logout
+Connection to k2 closed.
+[root@k8 ~]# ll
+total 12
+-rw-------. 1 root root 1518 Sep 30 01:22 anaconda-ks.cfg
+-rw-------  1 root root 1675 Oct 27 20:32 y
+-rw-r--r--  1 root root  395 Oct 27 20:32 y.pub
+[root@k8 ~]# yum install kubeadm docker -y
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+ * base: mirror.its.sfu.ca
+ * epel: d2lzkl7pfhq30w.cloudfront.net
+ * extras: mirror.layeronline.com
+ * updates: mirror.its.sfu.ca
+Resolving Dependencies
+--> Running transaction check
+---> Package docker.x86_64 2:1.13.1-75.git8633870.el7.centos will be installed
+--> Processing Dependency: docker-common = 2:1.13.1-75.git8633870.el7.centos for package: 2:docker-1.13.1-75.gi                                                         t8633870.el7.centos.x86_64
+--> Processing Dependency: docker-client = 2:1.13.1-75.git8633870.el7.centos for package: 2:docker-1.13.1-75.gi                                                         t8633870.el7.centos.x86_64
+--> Processing Dependency: subscription-manager-rhsm-certificates for package: 2:docker-1.13.1-75.git8633870.el                                                         7.centos.x86_64
+---> Package kubeadm.x86_64 0:1.12.2-0 will be installed
+--> Processing Dependency: kubernetes-cni >= 0.6.0 for package: kubeadm-1.12.2-0.x86_64
+--> Processing Dependency: kubelet >= 1.6.0 for package: kubeadm-1.12.2-0.x86_64
+--> Processing Dependency: kubectl >= 1.6.0 for package: kubeadm-1.12.2-0.x86_64
+--> Processing Dependency: cri-tools >= 1.11.0 for package: kubeadm-1.12.2-0.x86_64
+--> Running transaction check
+---> Package cri-tools.x86_64 0:1.12.0-0 will be installed
+---> Package docker-client.x86_64 2:1.13.1-75.git8633870.el7.centos will be installed
+---> Package docker-common.x86_64 2:1.13.1-75.git8633870.el7.centos will be installed
+--> Processing Dependency: skopeo-containers >= 1:0.1.26-2 for package: 2:docker-common-1.13.1-75.git8633870.el                                                         7.centos.x86_64
+--> Processing Dependency: oci-umount >= 2:2.3.3-3 for package: 2:docker-common-1.13.1-75.git8633870.el7.centos                                                         .x86_64
+--> Processing Dependency: oci-systemd-hook >= 1:0.1.4-9 for package: 2:docker-common-1.13.1-75.git8633870.el7.                                                         centos.x86_64
+--> Processing Dependency: oci-register-machine >= 1:0-5.13 for package: 2:docker-common-1.13.1-75.git8633870.e                                                         l7.centos.x86_64
+--> Processing Dependency: container-storage-setup >= 0.9.0-1 for package: 2:docker-common-1.13.1-75.git8633870                                                         .el7.centos.x86_64
+--> Processing Dependency: container-selinux >= 2:2.51-1 for package: 2:docker-common-1.13.1-75.git8633870.el7.                                                         centos.x86_64
+--> Processing Dependency: atomic-registries for package: 2:docker-common-1.13.1-75.git8633870.el7.centos.x86_6                                                         4
+---> Package kubectl.x86_64 0:1.12.2-0 will be installed
+---> Package kubelet.x86_64 0:1.12.2-0 will be installed
+--> Processing Dependency: socat for package: kubelet-1.12.2-0.x86_64
+---> Package kubernetes-cni.x86_64 0:0.6.0-0 will be installed
+---> Package subscription-manager-rhsm-certificates.x86_64 0:1.20.11-1.el7.centos will be installed
+--> Running transaction check
+---> Package atomic-registries.x86_64 1:1.22.1-25.git5a342e3.el7.centos will be installed
+--> Processing Dependency: python-pytoml for package: 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_6                                                         4
+---> Package container-selinux.noarch 2:2.68-1.el7 will be installed
+---> Package container-storage-setup.noarch 0:0.11.0-2.git5eaf76c.el7 will be installed
+---> Package oci-register-machine.x86_64 1:0-6.git2b44233.el7 will be installed
+---> Package oci-systemd-hook.x86_64 1:0.1.17-2.git83283a0.el7 will be installed
+---> Package oci-umount.x86_64 2:2.3.3-3.gite3c9055.el7 will be installed
+---> Package skopeo-containers.x86_64 1:0.1.31-1.dev.gitae64ff7.el7.centos will be installed
+---> Package socat.x86_64 0:1.7.3.2-2.el7 will be installed
+--> Running transaction check
+---> Package python2-pytoml.noarch 0:0.1.18-1.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+===============================================================================================================
+ Package                                  Arch     Version                                  Repository    Size
+===============================================================================================================
+Installing:
+ docker                                   x86_64   2:1.13.1-75.git8633870.el7.centos        extras        16 M
+ kubeadm                                  x86_64   1.12.2-0                                 kubernetes   7.2 M
+Installing for dependencies:
+ atomic-registries                        x86_64   1:1.22.1-25.git5a342e3.el7.centos        extras        35 k
+ container-selinux                        noarch   2:2.68-1.el7                             extras        36 k
+ container-storage-setup                  noarch   0.11.0-2.git5eaf76c.el7                  extras        35 k
+ cri-tools                                x86_64   1.12.0-0                                 kubernetes   4.2 M
+ docker-client                            x86_64   2:1.13.1-75.git8633870.el7.centos        extras       3.8 M
+ docker-common                            x86_64   2:1.13.1-75.git8633870.el7.centos        extras        93 k
+ kubectl                                  x86_64   1.12.2-0                                 kubernetes   7.7 M
+ kubelet                                  x86_64   1.12.2-0                                 kubernetes    19 M
+ kubernetes-cni                           x86_64   0.6.0-0                                  kubernetes   8.6 M
+ oci-register-machine                     x86_64   1:0-6.git2b44233.el7                     extras       1.1 M
+ oci-systemd-hook                         x86_64   1:0.1.17-2.git83283a0.el7                extras        33 k
+ oci-umount                               x86_64   2:2.3.3-3.gite3c9055.el7                 extras        32 k
+ python2-pytoml                           noarch   0.1.18-1.el7                             epel          20 k
+ skopeo-containers                        x86_64   1:0.1.31-1.dev.gitae64ff7.el7.centos     extras        17 k
+ socat                                    x86_64   1.7.3.2-2.el7                            base         290 k
+ subscription-manager-rhsm-certificates   x86_64   1.20.11-1.el7.centos                     base         195 k
+
+Transaction Summary
+===============================================================================================================
+Install  2 Packages (+16 Dependent packages)
+
+Total download size: 69 M
+Installed size: 310 M
+Downloading packages:
+(1/18): container-selinux-2.68-1.el7.noarch.rpm                                         |  36 kB  00:00:00
+(2/18): container-storage-setup-0.11.0-2.git5eaf76c.el7.noarch.rpm                      |  35 kB  00:00:00
+(3/18): docker-1.13.1-75.git8633870.el7.centos.x86_64.rpm                               |  16 MB  00:00:02
+(4/18): docker-common-1.13.1-75.git8633870.el7.centos.x86_64.rpm                        |  93 kB  00:00:00
+(5/18): docker-client-1.13.1-75.git8633870.el7.centos.x86_64.rpm                        | 3.8 MB  00:00:00
+warning: /var/cache/yum/x86_64/7/kubernetes/packages/6bd058ff754287c0b6b7431ee8f08bd35af40b0b1d098d94acf1448de0                                                         c8053b-kubeadm-1.12.2-0.x86_64.rpm: Header V4 RSA/SHA512 Signature, key ID 3e1ba8d5: NOKEY
+Public key for 6bd058ff754287c0b6b7431ee8f08bd35af40b0b1d098d94acf1448de0c8053b-kubeadm-1.12.2-0.x86_64.rpm is                                                          not installed
+(6/18): 6bd058ff754287c0b6b7431ee8f08bd35af40b0b1d098d94acf1448de0c8053b-kubeadm-1.12.2 | 7.2 MB  00:00:01
+(7/18): ead06eb2dc5ff86ca39823fa5f9e944b2f197e681b76ea0ba4a72f5ca6c51f32-kubectl-1.12.2 | 7.7 MB  00:00:01
+(8/18): atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_64.rpm                    |  35 kB  00:00:05
+(9/18): 53edc739a0e51a4c17794de26b13ee5df939bd3161b37f503fe2af8980b41a89-cri-tools-1.12 | 4.2 MB  00:00:08
+(10/18): oci-umount-2.3.3-3.gite3c9055.el7.x86_64.rpm                                   |  32 kB  00:00:00
+(11/18): oci-register-machine-0-6.git2b44233.el7.x86_64.rpm                             | 1.1 MB  00:00:00
+(12/18): skopeo-containers-0.1.31-1.dev.gitae64ff7.el7.centos.x86_64.rpm                |  17 kB  00:00:00
+(13/18): socat-1.7.3.2-2.el7.x86_64.rpm                                                 | 290 kB  00:00:00
+(14/18): subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64.rpm         | 195 kB  00:00:00
+(15/18): c2c59cf03fa14b8d91026c94d63c877091d54ae8492ee3f49faa7aeccd5cac3f-kubelet-1.12. |  19 MB  00:00:04
+(16/18): fe33057ffe95bfae65e2f269e1b05e99308853176e24a4d027bc082b471a07c0-kubernetes-cn | 8.6 MB  00:00:02
+(17/18): oci-systemd-hook-0.1.17-2.git83283a0.el7.x86_64.rpm                            |  33 kB  00:00:05
+(18/18): python2-pytoml-0.1.18-1.el7.noarch.rpm                                         |  20 kB  00:00:06
+---------------------------------------------------------------------------------------------------------------
+Total                                                                          4.6 MB/s |  69 MB  00:00:15
+Retrieving key from https://packages.cloud.google.com/yum/doc/yum-key.gpg
+Importing GPG key 0xA7317B0F:
+ Userid     : "Google Cloud Packages Automatic Signing Key <gc-team@google.com>"
+ Fingerprint: d0bc 747f d8ca f711 7500 d6fa 3746 c208 a731 7b0f
+ From       : https://packages.cloud.google.com/yum/doc/yum-key.gpg
+Retrieving key from https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+Importing GPG key 0x3E1BA8D5:
+ Userid     : "Google Cloud Packages RPM Signing Key <gc-team@google.com>"
+ Fingerprint: 3749 e1ba 95a8 6ce0 5454 6ed2 f09c 394c 3e1b a8d5
+ From       : https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : kubectl-1.12.2-0.x86_64                                                                    1/18
+  Installing : 1:skopeo-containers-0.1.31-1.dev.gitae64ff7.el7.centos.x86_64                              2/18
+  Installing : 2:oci-umount-2.3.3-3.gite3c9055.el7.x86_64                                                 3/18
+  Installing : 1:oci-systemd-hook-0.1.17-2.git83283a0.el7.x86_64                                          4/18
+  Installing : container-storage-setup-0.11.0-2.git5eaf76c.el7.noarch                                     5/18
+  Installing : 2:container-selinux-2.68-1.el7.noarch                                                      6/18
+setsebool:  SELinux is disabled.
+  Installing : 1:oci-register-machine-0-6.git2b44233.el7.x86_64                                           7/18
+  Installing : subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64                         8/18
+  Installing : python2-pytoml-0.1.18-1.el7.noarch                                                         9/18
+  Installing : 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_64                                10/18
+  Installing : 2:docker-common-1.13.1-75.git8633870.el7.centos.x86_64                                    11/18
+  Installing : 2:docker-client-1.13.1-75.git8633870.el7.centos.x86_64                                    12/18
+  Installing : cri-tools-1.12.0-0.x86_64                                                                 13/18
+  Installing : socat-1.7.3.2-2.el7.x86_64                                                                14/18
+  Installing : kubernetes-cni-0.6.0-0.x86_64                                                             15/18
+  Installing : kubelet-1.12.2-0.x86_64                                                                   16/18
+  Installing : kubeadm-1.12.2-0.x86_64                                                                   17/18
+  Installing : 2:docker-1.13.1-75.git8633870.el7.centos.x86_64                                           18/18
+  Verifying  : kubeadm-1.12.2-0.x86_64                                                                    1/18
+  Verifying  : socat-1.7.3.2-2.el7.x86_64                                                                 2/18
+  Verifying  : cri-tools-1.12.0-0.x86_64                                                                  3/18
+  Verifying  : python2-pytoml-0.1.18-1.el7.noarch                                                         4/18
+  Verifying  : subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64                         5/18
+  Verifying  : 2:docker-common-1.13.1-75.git8633870.el7.centos.x86_64                                     6/18
+  Verifying  : 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_64                                 7/18
+  Verifying  : 1:oci-register-machine-0-6.git2b44233.el7.x86_64                                           8/18
+  Verifying  : kubelet-1.12.2-0.x86_64                                                                    9/18
+  Verifying  : 2:container-selinux-2.68-1.el7.noarch                                                     10/18
+  Verifying  : container-storage-setup-0.11.0-2.git5eaf76c.el7.noarch                                    11/18
+  Verifying  : 2:docker-client-1.13.1-75.git8633870.el7.centos.x86_64                                    12/18
+  Verifying  : 1:oci-systemd-hook-0.1.17-2.git83283a0.el7.x86_64                                         13/18
+  Verifying  : 2:docker-1.13.1-75.git8633870.el7.centos.x86_64                                           14/18
+  Verifying  : 2:oci-umount-2.3.3-3.gite3c9055.el7.x86_64                                                15/18
+  Verifying  : 1:skopeo-containers-0.1.31-1.dev.gitae64ff7.el7.centos.x86_64                             16/18
+  Verifying  : kubernetes-cni-0.6.0-0.x86_64                                                             17/18
+  Verifying  : kubectl-1.12.2-0.x86_64                                                                   18/18
+
+Installed:
+  docker.x86_64 2:1.13.1-75.git8633870.el7.centos                   kubeadm.x86_64 0:1.12.2-0
+
+Dependency Installed:
+  atomic-registries.x86_64 1:1.22.1-25.git5a342e3.el7.centos
+  container-selinux.noarch 2:2.68-1.el7
+  container-storage-setup.noarch 0:0.11.0-2.git5eaf76c.el7
+  cri-tools.x86_64 0:1.12.0-0
+  docker-client.x86_64 2:1.13.1-75.git8633870.el7.centos
+  docker-common.x86_64 2:1.13.1-75.git8633870.el7.centos
+  kubectl.x86_64 0:1.12.2-0
+  kubelet.x86_64 0:1.12.2-0
+  kubernetes-cni.x86_64 0:0.6.0-0
+  oci-register-machine.x86_64 1:0-6.git2b44233.el7
+  oci-systemd-hook.x86_64 1:0.1.17-2.git83283a0.el7
+  oci-umount.x86_64 2:2.3.3-3.gite3c9055.el7
+  python2-pytoml.noarch 0:0.1.18-1.el7
+  skopeo-containers.x86_64 1:0.1.31-1.dev.gitae64ff7.el7.centos
+  socat.x86_64 0:1.7.3.2-2.el7
+  subscription-manager-rhsm-certificates.x86_64 0:1.20.11-1.el7.centos
+
+Complete!
+[root@k8 ~]# ssh k1
+Last login: Sun Oct 28 00:56:52 2018 from k8.bc.ca
+[root@k1 ~]# yum install kubeadm docker -y
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+ * base: mirror.its.sfu.ca
+ * extras: mirror.its.sfu.ca
+ * updates: mirror.its.sfu.ca
+Resolving Dependencies
+--> Running transaction check
+---> Package docker.x86_64 2:1.13.1-75.git8633870.el7.centos will be installed
+--> Processing Dependency: docker-common = 2:1.13.1-75.git8633870.el7.centos for package: 2:docker-1.13.1-75.gi                                                         t8633870.el7.centos.x86_64
+--> Processing Dependency: docker-client = 2:1.13.1-75.git8633870.el7.centos for package: 2:docker-1.13.1-75.gi                                                         t8633870.el7.centos.x86_64
+--> Processing Dependency: subscription-manager-rhsm-certificates for package: 2:docker-1.13.1-75.git8633870.el                                                         7.centos.x86_64
+---> Package kubeadm.x86_64 0:1.12.2-0 will be installed
+--> Processing Dependency: kubernetes-cni >= 0.6.0 for package: kubeadm-1.12.2-0.x86_64
+--> Processing Dependency: kubelet >= 1.6.0 for package: kubeadm-1.12.2-0.x86_64
+--> Processing Dependency: kubectl >= 1.6.0 for package: kubeadm-1.12.2-0.x86_64
+--> Processing Dependency: cri-tools >= 1.11.0 for package: kubeadm-1.12.2-0.x86_64
+--> Running transaction check
+---> Package cri-tools.x86_64 0:1.12.0-0 will be installed
+---> Package docker-client.x86_64 2:1.13.1-75.git8633870.el7.centos will be installed
+---> Package docker-common.x86_64 2:1.13.1-75.git8633870.el7.centos will be installed
+--> Processing Dependency: skopeo-containers >= 1:0.1.26-2 for package: 2:docker-common-1.13.1-75.git8633870.el                                                         7.centos.x86_64
+--> Processing Dependency: oci-umount >= 2:2.3.3-3 for package: 2:docker-common-1.13.1-75.git8633870.el7.centos                                                         .x86_64
+--> Processing Dependency: oci-systemd-hook >= 1:0.1.4-9 for package: 2:docker-common-1.13.1-75.git8633870.el7.                                                         centos.x86_64
+--> Processing Dependency: oci-register-machine >= 1:0-5.13 for package: 2:docker-common-1.13.1-75.git8633870.e                                                         l7.centos.x86_64
+--> Processing Dependency: container-storage-setup >= 0.9.0-1 for package: 2:docker-common-1.13.1-75.git8633870                                                         .el7.centos.x86_64
+--> Processing Dependency: container-selinux >= 2:2.51-1 for package: 2:docker-common-1.13.1-75.git8633870.el7.                                                         centos.x86_64
+--> Processing Dependency: atomic-registries for package: 2:docker-common-1.13.1-75.git8633870.el7.centos.x86_6                                                         4
+---> Package kubectl.x86_64 0:1.12.2-0 will be installed
+---> Package kubelet.x86_64 0:1.12.2-0 will be installed
+--> Processing Dependency: socat for package: kubelet-1.12.2-0.x86_64
+---> Package kubernetes-cni.x86_64 0:0.6.0-0 will be installed
+---> Package subscription-manager-rhsm-certificates.x86_64 0:1.20.11-1.el7.centos will be installed
+--> Running transaction check
+---> Package atomic-registries.x86_64 1:1.22.1-25.git5a342e3.el7.centos will be installed
+--> Processing Dependency: python-yaml for package: 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_64
+--> Processing Dependency: python-setuptools for package: 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x                                                         86_64
+--> Processing Dependency: python-pytoml for package: 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_6                                                         4
+---> Package container-selinux.noarch 2:2.68-1.el7 will be installed
+--> Processing Dependency: policycoreutils-python for package: 2:container-selinux-2.68-1.el7.noarch
+---> Package container-storage-setup.noarch 0:0.11.0-2.git5eaf76c.el7 will be installed
+---> Package oci-register-machine.x86_64 1:0-6.git2b44233.el7 will be installed
+---> Package oci-systemd-hook.x86_64 1:0.1.17-2.git83283a0.el7 will be installed
+---> Package oci-umount.x86_64 2:2.3.3-3.gite3c9055.el7 will be installed
+---> Package skopeo-containers.x86_64 1:0.1.31-1.dev.gitae64ff7.el7.centos will be installed
+---> Package socat.x86_64 0:1.7.3.2-2.el7 will be installed
+--> Running transaction check
+---> Package PyYAML.x86_64 0:3.10-11.el7 will be installed
+--> Processing Dependency: libyaml-0.so.2()(64bit) for package: PyYAML-3.10-11.el7.x86_64
+---> Package policycoreutils-python.x86_64 0:2.5-22.el7 will be installed
+--> Processing Dependency: setools-libs >= 3.3.8-2 for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libsemanage-python >= 2.5-9 for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: audit-libs-python >= 2.1.3-4 for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: python-IPy for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libqpol.so.1(VERS_1.4)(64bit) for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libqpol.so.1(VERS_1.2)(64bit) for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libcgroup for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libapol.so.4(VERS_4.0)(64bit) for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: checkpolicy for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libqpol.so.1()(64bit) for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libapol.so.4()(64bit) for package: policycoreutils-python-2.5-22.el7.x86_64
+---> Package python-pytoml.noarch 0:0.1.14-1.git7dea353.el7 will be installed
+---> Package python-setuptools.noarch 0:0.9.8-7.el7 will be installed
+--> Processing Dependency: python-backports-ssl_match_hostname for package: python-setuptools-0.9.8-7.el7.noarc                                                         h
+--> Running transaction check
+---> Package audit-libs-python.x86_64 0:2.8.1-3.el7_5.1 will be installed
+---> Package checkpolicy.x86_64 0:2.5-6.el7 will be installed
+---> Package libcgroup.x86_64 0:0.41-15.el7 will be installed
+---> Package libsemanage-python.x86_64 0:2.5-11.el7 will be installed
+---> Package libyaml.x86_64 0:0.1.4-11.el7_0 will be installed
+---> Package python-IPy.noarch 0:0.75-6.el7 will be installed
+---> Package python-backports-ssl_match_hostname.noarch 0:3.5.0.1-1.el7 will be installed
+--> Processing Dependency: python-ipaddress for package: python-backports-ssl_match_hostname-3.5.0.1-1.el7.noar                                                         ch
+--> Processing Dependency: python-backports for package: python-backports-ssl_match_hostname-3.5.0.1-1.el7.noar                                                         ch
+---> Package setools-libs.x86_64 0:3.3.8-2.el7 will be installed
+--> Running transaction check
+---> Package python-backports.x86_64 0:1.0-8.el7 will be installed
+---> Package python-ipaddress.noarch 0:1.0.16-2.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+===============================================================================================================
+ Package                                  Arch     Version                                  Repository    Size
+===============================================================================================================
+Installing:
+ docker                                   x86_64   2:1.13.1-75.git8633870.el7.centos        extras        16 M
+ kubeadm                                  x86_64   1.12.2-0                                 kubernetes   7.2 M
+Installing for dependencies:
+ PyYAML                                   x86_64   3.10-11.el7                              base         153 k
+ atomic-registries                        x86_64   1:1.22.1-25.git5a342e3.el7.centos        extras        35 k
+ audit-libs-python                        x86_64   2.8.1-3.el7_5.1                          updates       75 k
+ checkpolicy                              x86_64   2.5-6.el7                                base         294 k
+ container-selinux                        noarch   2:2.68-1.el7                             extras        36 k
+ container-storage-setup                  noarch   0.11.0-2.git5eaf76c.el7                  extras        35 k
+ cri-tools                                x86_64   1.12.0-0                                 kubernetes   4.2 M
+ docker-client                            x86_64   2:1.13.1-75.git8633870.el7.centos        extras       3.8 M
+ docker-common                            x86_64   2:1.13.1-75.git8633870.el7.centos        extras        93 k
+ kubectl                                  x86_64   1.12.2-0                                 kubernetes   7.7 M
+ kubelet                                  x86_64   1.12.2-0                                 kubernetes    19 M
+ kubernetes-cni                           x86_64   0.6.0-0                                  kubernetes   8.6 M
+ libcgroup                                x86_64   0.41-15.el7                              base          65 k
+ libsemanage-python                       x86_64   2.5-11.el7                               base         112 k
+ libyaml                                  x86_64   0.1.4-11.el7_0                           base          55 k
+ oci-register-machine                     x86_64   1:0-6.git2b44233.el7                     extras       1.1 M
+ oci-systemd-hook                         x86_64   1:0.1.17-2.git83283a0.el7                extras        33 k
+ oci-umount                               x86_64   2:2.3.3-3.gite3c9055.el7                 extras        32 k
+ policycoreutils-python                   x86_64   2.5-22.el7                               base         454 k
+ python-IPy                               noarch   0.75-6.el7                               base          32 k
+ python-backports                         x86_64   1.0-8.el7                                base         5.8 k
+ python-backports-ssl_match_hostname      noarch   3.5.0.1-1.el7                            base          13 k
+ python-ipaddress                         noarch   1.0.16-2.el7                             base          34 k
+ python-pytoml                            noarch   0.1.14-1.git7dea353.el7                  extras        18 k
+ python-setuptools                        noarch   0.9.8-7.el7                              base         397 k
+ setools-libs                             x86_64   3.3.8-2.el7                              base         619 k
+ skopeo-containers                        x86_64   1:0.1.31-1.dev.gitae64ff7.el7.centos     extras        17 k
+ socat                                    x86_64   1.7.3.2-2.el7                            base         290 k
+ subscription-manager-rhsm-certificates   x86_64   1.20.11-1.el7.centos                     base         195 k
+
+Transaction Summary
+===============================================================================================================
+Install  2 Packages (+29 Dependent packages)
+
+Total download size: 71 M
+Installed size: 318 M
+Downloading packages:
+(1/31): PyYAML-3.10-11.el7.x86_64.rpm                                                   | 153 kB  00:00:05
+(2/31): audit-libs-python-2.8.1-3.el7_5.1.x86_64.rpm                                    |  75 kB  00:00:05
+(3/31): container-storage-setup-0.11.0-2.git5eaf76c.el7.noarch.rpm                      |  35 kB  00:00:00
+(4/31): atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_64.rpm                    |  35 kB  00:00:05
+(5/31): checkpolicy-2.5-6.el7.x86_64.rpm                                                | 294 kB  00:00:08
+(6/31): docker-1.13.1-75.git8633870.el7.centos.x86_64.rpm                               |  16 MB  00:00:02
+(7/31): docker-client-1.13.1-75.git8633870.el7.centos.x86_64.rpm                        | 3.8 MB  00:00:02
+(8/31): docker-common-1.13.1-75.git8633870.el7.centos.x86_64.rpm                        |  93 kB  00:00:00
+warning: /var/cache/yum/x86_64/7/kubernetes/packages/6bd058ff754287c0b6b7431ee8f08bd35af40b0b1d098d94acf1448de0                                                         c8053b-kubeadm-1.12.2-0.x86_64.rpm: Header V4 RSA/SHA512 Signature, key ID 3e1ba8d5: NOKEY
+Public key for 6bd058ff754287c0b6b7431ee8f08bd35af40b0b1d098d94acf1448de0c8053b-kubeadm-1.12.2-0.x86_64.rpm is                                                          not installed
+(9/31): 6bd058ff754287c0b6b7431ee8f08bd35af40b0b1d098d94acf1448de0c8053b-kubeadm-1.12.2 | 7.2 MB  00:00:01
+(10/31): container-selinux-2.68-1.el7.noarch.rpm                                        |  36 kB  00:00:10
+(11/31): ead06eb2dc5ff86ca39823fa5f9e944b2f197e681b76ea0ba4a72f5ca6c51f32-kubectl-1.12. | 7.7 MB  00:00:01
+(12/31): 53edc739a0e51a4c17794de26b13ee5df939bd3161b37f503fe2af8980b41a89-cri-tools-1.1 | 4.2 MB  00:00:07
+(13/31): libcgroup-0.41-15.el7.x86_64.rpm                                               |  65 kB  00:00:00
+(14/31): libsemanage-python-2.5-11.el7.x86_64.rpm                                       | 112 kB  00:00:00
+(15/31): oci-systemd-hook-0.1.17-2.git83283a0.el7.x86_64.rpm                            |  33 kB  00:00:00
+(16/31): oci-umount-2.3.3-3.gite3c9055.el7.x86_64.rpm                                   |  32 kB  00:00:00
+(17/31): policycoreutils-python-2.5-22.el7.x86_64.rpm                                   | 454 kB  00:00:00
+(18/31): python-IPy-0.75-6.el7.noarch.rpm                                               |  32 kB  00:00:00
+(19/31): python-backports-1.0-8.el7.x86_64.rpm                                          | 5.8 kB  00:00:00
+(20/31): python-backports-ssl_match_hostname-3.5.0.1-1.el7.noarch.rpm                   |  13 kB  00:00:00
+(21/31): python-ipaddress-1.0.16-2.el7.noarch.rpm                                       |  34 kB  00:00:00
+(22/31): python-pytoml-0.1.14-1.git7dea353.el7.noarch.rpm                               |  18 kB  00:00:00
+(23/31): python-setuptools-0.9.8-7.el7.noarch.rpm                                       | 397 kB  00:00:00
+(24/31): oci-register-machine-0-6.git2b44233.el7.x86_64.rpm                             | 1.1 MB  00:00:01
+(25/31): setools-libs-3.3.8-2.el7.x86_64.rpm                                            | 619 kB  00:00:00
+(26/31): skopeo-containers-0.1.31-1.dev.gitae64ff7.el7.centos.x86_64.rpm                |  17 kB  00:00:00
+(27/31): socat-1.7.3.2-2.el7.x86_64.rpm                                                 | 290 kB  00:00:00
+(28/31): subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64.rpm         | 195 kB  00:00:00
+(29/31): fe33057ffe95bfae65e2f269e1b05e99308853176e24a4d027bc082b471a07c0-kubernetes-cn | 8.6 MB  00:00:02
+(30/31): c2c59cf03fa14b8d91026c94d63c877091d54ae8492ee3f49faa7aeccd5cac3f-kubelet-1.12. |  19 MB  00:00:04
+(31/31): libyaml-0.1.4-11.el7_0.x86_64.rpm                                              |  55 kB  00:00:05
+---------------------------------------------------------------------------------------------------------------
+Total                                                                          3.8 MB/s |  71 MB  00:00:18
+Retrieving key from https://packages.cloud.google.com/yum/doc/yum-key.gpg
+Importing GPG key 0xA7317B0F:
+ Userid     : "Google Cloud Packages Automatic Signing Key <gc-team@google.com>"
+ Fingerprint: d0bc 747f d8ca f711 7500 d6fa 3746 c208 a731 7b0f
+ From       : https://packages.cloud.google.com/yum/doc/yum-key.gpg
+Retrieving key from https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+Importing GPG key 0x3E1BA8D5:
+ Userid     : "Google Cloud Packages RPM Signing Key <gc-team@google.com>"
+ Fingerprint: 3749 e1ba 95a8 6ce0 5454 6ed2 f09c 394c 3e1b a8d5
+ From       : https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : checkpolicy-2.5-6.el7.x86_64                                                               1/31
+  Installing : socat-1.7.3.2-2.el7.x86_64                                                                 2/31
+  Installing : kubernetes-cni-0.6.0-0.x86_64                                                              3/31
+  Installing : kubelet-1.12.2-0.x86_64                                                                    4/31
+  Installing : python-ipaddress-1.0.16-2.el7.noarch                                                       5/31
+  Installing : libyaml-0.1.4-11.el7_0.x86_64                                                              6/31
+  Installing : PyYAML-3.10-11.el7.x86_64                                                                  7/31
+  Installing : python-backports-1.0-8.el7.x86_64                                                          8/31
+  Installing : python-backports-ssl_match_hostname-3.5.0.1-1.el7.noarch                                   9/31
+  Installing : python-setuptools-0.9.8-7.el7.noarch                                                      10/31
+  Installing : 2:oci-umount-2.3.3-3.gite3c9055.el7.x86_64                                                11/31
+  Installing : 1:oci-register-machine-0-6.git2b44233.el7.x86_64                                          12/31
+  Installing : cri-tools-1.12.0-0.x86_64                                                                 13/31
+  Installing : libcgroup-0.41-15.el7.x86_64                                                              14/31
+  Installing : 1:oci-systemd-hook-0.1.17-2.git83283a0.el7.x86_64                                         15/31
+  Installing : python-pytoml-0.1.14-1.git7dea353.el7.noarch                                              16/31
+  Installing : 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_64                                17/31
+  Installing : setools-libs-3.3.8-2.el7.x86_64                                                           18/31
+  Installing : python-IPy-0.75-6.el7.noarch                                                              19/31
+  Installing : 1:skopeo-containers-0.1.31-1.dev.gitae64ff7.el7.centos.x86_64                             20/31
+  Installing : container-storage-setup-0.11.0-2.git5eaf76c.el7.noarch                                    21/31
+  Installing : audit-libs-python-2.8.1-3.el7_5.1.x86_64                                                  22/31
+  Installing : subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64                        23/31
+  Installing : libsemanage-python-2.5-11.el7.x86_64                                                      24/31
+  Installing : policycoreutils-python-2.5-22.el7.x86_64                                                  25/31
+  Installing : 2:container-selinux-2.68-1.el7.noarch                                                     26/31
+setsebool:  SELinux is disabled.
+  Installing : 2:docker-common-1.13.1-75.git8633870.el7.centos.x86_64                                    27/31
+  Installing : 2:docker-client-1.13.1-75.git8633870.el7.centos.x86_64                                    28/31
+  Installing : kubectl-1.12.2-0.x86_64                                                                   29/31
+  Installing : kubeadm-1.12.2-0.x86_64                                                                   30/31
+  Installing : 2:docker-1.13.1-75.git8633870.el7.centos.x86_64                                           31/31
+  Verifying  : kubeadm-1.12.2-0.x86_64                                                                    1/31
+  Verifying  : kubectl-1.12.2-0.x86_64                                                                    2/31
+  Verifying  : libsemanage-python-2.5-11.el7.x86_64                                                       3/31
+  Verifying  : python-backports-ssl_match_hostname-3.5.0.1-1.el7.noarch                                   4/31
+  Verifying  : subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64                         5/31
+  Verifying  : audit-libs-python-2.8.1-3.el7_5.1.x86_64                                                   6/31
+  Verifying  : 2:docker-common-1.13.1-75.git8633870.el7.centos.x86_64                                     7/31
+  Verifying  : 2:container-selinux-2.68-1.el7.noarch                                                      8/31
+  Verifying  : container-storage-setup-0.11.0-2.git5eaf76c.el7.noarch                                     9/31
+  Verifying  : python-setuptools-0.9.8-7.el7.noarch                                                      10/31
+  Verifying  : 1:skopeo-containers-0.1.31-1.dev.gitae64ff7.el7.centos.x86_64                             11/31
+  Verifying  : policycoreutils-python-2.5-22.el7.x86_64                                                  12/31
+  Verifying  : kubelet-1.12.2-0.x86_64                                                                   13/31
+  Verifying  : python-IPy-0.75-6.el7.noarch                                                              14/31
+  Verifying  : 2:docker-client-1.13.1-75.git8633870.el7.centos.x86_64                                    15/31
+  Verifying  : setools-libs-3.3.8-2.el7.x86_64                                                           16/31
+  Verifying  : python-pytoml-0.1.14-1.git7dea353.el7.noarch                                              17/31
+  Verifying  : 1:oci-systemd-hook-0.1.17-2.git83283a0.el7.x86_64                                         18/31
+  Verifying  : libcgroup-0.41-15.el7.x86_64                                                              19/31
+  Verifying  : cri-tools-1.12.0-0.x86_64                                                                 20/31
+  Verifying  : kubernetes-cni-0.6.0-0.x86_64                                                             21/31
+  Verifying  : 1:oci-register-machine-0-6.git2b44233.el7.x86_64                                          22/31
+  Verifying  : 2:oci-umount-2.3.3-3.gite3c9055.el7.x86_64                                                23/31
+  Verifying  : python-backports-1.0-8.el7.x86_64                                                         24/31
+  Verifying  : 2:docker-1.13.1-75.git8633870.el7.centos.x86_64                                           25/31
+  Verifying  : libyaml-0.1.4-11.el7_0.x86_64                                                             26/31
+  Verifying  : python-ipaddress-1.0.16-2.el7.noarch                                                      27/31
+  Verifying  : PyYAML-3.10-11.el7.x86_64                                                                 28/31
+  Verifying  : 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_64                                29/31
+  Verifying  : socat-1.7.3.2-2.el7.x86_64                                                                30/31
+  Verifying  : checkpolicy-2.5-6.el7.x86_64                                                              31/31
+
+Installed:
+  docker.x86_64 2:1.13.1-75.git8633870.el7.centos                   kubeadm.x86_64 0:1.12.2-0
+
+Dependency Installed:
+  PyYAML.x86_64 0:3.10-11.el7
+  atomic-registries.x86_64 1:1.22.1-25.git5a342e3.el7.centos
+  audit-libs-python.x86_64 0:2.8.1-3.el7_5.1
+  checkpolicy.x86_64 0:2.5-6.el7
+  container-selinux.noarch 2:2.68-1.el7
+  container-storage-setup.noarch 0:0.11.0-2.git5eaf76c.el7
+  cri-tools.x86_64 0:1.12.0-0
+  docker-client.x86_64 2:1.13.1-75.git8633870.el7.centos
+  docker-common.x86_64 2:1.13.1-75.git8633870.el7.centos
+  kubectl.x86_64 0:1.12.2-0
+  kubelet.x86_64 0:1.12.2-0
+  kubernetes-cni.x86_64 0:0.6.0-0
+  libcgroup.x86_64 0:0.41-15.el7
+  libsemanage-python.x86_64 0:2.5-11.el7
+  libyaml.x86_64 0:0.1.4-11.el7_0
+  oci-register-machine.x86_64 1:0-6.git2b44233.el7
+  oci-systemd-hook.x86_64 1:0.1.17-2.git83283a0.el7
+  oci-umount.x86_64 2:2.3.3-3.gite3c9055.el7
+  policycoreutils-python.x86_64 0:2.5-22.el7
+  python-IPy.noarch 0:0.75-6.el7
+  python-backports.x86_64 0:1.0-8.el7
+  python-backports-ssl_match_hostname.noarch 0:3.5.0.1-1.el7
+  python-ipaddress.noarch 0:1.0.16-2.el7
+  python-pytoml.noarch 0:0.1.14-1.git7dea353.el7
+  python-setuptools.noarch 0:0.9.8-7.el7
+  setools-libs.x86_64 0:3.3.8-2.el7
+  skopeo-containers.x86_64 1:0.1.31-1.dev.gitae64ff7.el7.centos
+  socat.x86_64 0:1.7.3.2-2.el7
+  subscription-manager-rhsm-certificates.x86_64 0:1.20.11-1.el7.centos
+
+Complete!
+[root@k1 ~]# exit
+logout
+Connection to k1 closed.
+[root@k8 ~]# ssh k2
+Last login: Sun Oct 28 00:57:12 2018 from k8.bc.ca
+[root@k2 ~]# yum install kubeadm docker -y
+Loaded plugins: fastestmirror, langpacks
+Loading mirror speeds from cached hostfile
+ * base: mirror.its.sfu.ca
+ * extras: mirror.its.sfu.ca
+ * updates: mirror.its.sfu.ca
+Resolving Dependencies
+--> Running transaction check
+---> Package docker.x86_64 2:1.13.1-75.git8633870.el7.centos will be installed
+--> Processing Dependency: docker-common = 2:1.13.1-75.git8633870.el7.centos for package: 2:docker-1.13.1-75.gi                                                         t8633870.el7.centos.x86_64
+--> Processing Dependency: docker-client = 2:1.13.1-75.git8633870.el7.centos for package: 2:docker-1.13.1-75.gi                                                         t8633870.el7.centos.x86_64
+--> Processing Dependency: subscription-manager-rhsm-certificates for package: 2:docker-1.13.1-75.git8633870.el                                                         7.centos.x86_64
+---> Package kubeadm.x86_64 0:1.12.2-0 will be installed
+--> Processing Dependency: kubernetes-cni >= 0.6.0 for package: kubeadm-1.12.2-0.x86_64
+--> Processing Dependency: kubelet >= 1.6.0 for package: kubeadm-1.12.2-0.x86_64
+--> Processing Dependency: kubectl >= 1.6.0 for package: kubeadm-1.12.2-0.x86_64
+--> Processing Dependency: cri-tools >= 1.11.0 for package: kubeadm-1.12.2-0.x86_64
+--> Running transaction check
+---> Package cri-tools.x86_64 0:1.12.0-0 will be installed
+---> Package docker-client.x86_64 2:1.13.1-75.git8633870.el7.centos will be installed
+---> Package docker-common.x86_64 2:1.13.1-75.git8633870.el7.centos will be installed
+--> Processing Dependency: skopeo-containers >= 1:0.1.26-2 for package: 2:docker-common-1.13.1-75.git8633870.el                                                         7.centos.x86_64
+--> Processing Dependency: oci-umount >= 2:2.3.3-3 for package: 2:docker-common-1.13.1-75.git8633870.el7.centos                                                         .x86_64
+--> Processing Dependency: oci-systemd-hook >= 1:0.1.4-9 for package: 2:docker-common-1.13.1-75.git8633870.el7.                                                         centos.x86_64
+--> Processing Dependency: oci-register-machine >= 1:0-5.13 for package: 2:docker-common-1.13.1-75.git8633870.e                                                         l7.centos.x86_64
+--> Processing Dependency: container-storage-setup >= 0.9.0-1 for package: 2:docker-common-1.13.1-75.git8633870                                                         .el7.centos.x86_64
+--> Processing Dependency: container-selinux >= 2:2.51-1 for package: 2:docker-common-1.13.1-75.git8633870.el7.                                                         centos.x86_64
+--> Processing Dependency: atomic-registries for package: 2:docker-common-1.13.1-75.git8633870.el7.centos.x86_6                                                         4
+---> Package kubectl.x86_64 0:1.12.2-0 will be installed
+---> Package kubelet.x86_64 0:1.12.2-0 will be installed
+--> Processing Dependency: socat for package: kubelet-1.12.2-0.x86_64
+---> Package kubernetes-cni.x86_64 0:0.6.0-0 will be installed
+---> Package subscription-manager-rhsm-certificates.x86_64 0:1.20.11-1.el7.centos will be installed
+--> Running transaction check
+---> Package atomic-registries.x86_64 1:1.22.1-25.git5a342e3.el7.centos will be installed
+--> Processing Dependency: python-yaml for package: 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_64
+--> Processing Dependency: python-setuptools for package: 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x                                                         86_64
+--> Processing Dependency: python-pytoml for package: 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_6                                                         4
+---> Package container-selinux.noarch 2:2.68-1.el7 will be installed
+--> Processing Dependency: policycoreutils-python for package: 2:container-selinux-2.68-1.el7.noarch
+---> Package container-storage-setup.noarch 0:0.11.0-2.git5eaf76c.el7 will be installed
+---> Package oci-register-machine.x86_64 1:0-6.git2b44233.el7 will be installed
+---> Package oci-systemd-hook.x86_64 1:0.1.17-2.git83283a0.el7 will be installed
+---> Package oci-umount.x86_64 2:2.3.3-3.gite3c9055.el7 will be installed
+---> Package skopeo-containers.x86_64 1:0.1.31-1.dev.gitae64ff7.el7.centos will be installed
+---> Package socat.x86_64 0:1.7.3.2-2.el7 will be installed
+--> Running transaction check
+---> Package PyYAML.x86_64 0:3.10-11.el7 will be installed
+--> Processing Dependency: libyaml-0.so.2()(64bit) for package: PyYAML-3.10-11.el7.x86_64
+---> Package policycoreutils-python.x86_64 0:2.5-22.el7 will be installed
+--> Processing Dependency: setools-libs >= 3.3.8-2 for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libsemanage-python >= 2.5-9 for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: audit-libs-python >= 2.1.3-4 for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: python-IPy for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libqpol.so.1(VERS_1.4)(64bit) for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libqpol.so.1(VERS_1.2)(64bit) for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libcgroup for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libapol.so.4(VERS_4.0)(64bit) for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: checkpolicy for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libqpol.so.1()(64bit) for package: policycoreutils-python-2.5-22.el7.x86_64
+--> Processing Dependency: libapol.so.4()(64bit) for package: policycoreutils-python-2.5-22.el7.x86_64
+---> Package python-pytoml.noarch 0:0.1.14-1.git7dea353.el7 will be installed
+---> Package python-setuptools.noarch 0:0.9.8-7.el7 will be installed
+--> Processing Dependency: python-backports-ssl_match_hostname for package: python-setuptools-0.9.8-7.el7.noarc                                                         h
+--> Running transaction check
+---> Package audit-libs-python.x86_64 0:2.8.1-3.el7_5.1 will be installed
+---> Package checkpolicy.x86_64 0:2.5-6.el7 will be installed
+---> Package libcgroup.x86_64 0:0.41-15.el7 will be installed
+---> Package libsemanage-python.x86_64 0:2.5-11.el7 will be installed
+---> Package libyaml.x86_64 0:0.1.4-11.el7_0 will be installed
+---> Package python-IPy.noarch 0:0.75-6.el7 will be installed
+---> Package python-backports-ssl_match_hostname.noarch 0:3.5.0.1-1.el7 will be installed
+--> Processing Dependency: python-ipaddress for package: python-backports-ssl_match_hostname-3.5.0.1-1.el7.noar                                                         ch
+--> Processing Dependency: python-backports for package: python-backports-ssl_match_hostname-3.5.0.1-1.el7.noar                                                         ch
+---> Package setools-libs.x86_64 0:3.3.8-2.el7 will be installed
+--> Running transaction check
+---> Package python-backports.x86_64 0:1.0-8.el7 will be installed
+---> Package python-ipaddress.noarch 0:1.0.16-2.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+===============================================================================================================
+ Package                                  Arch     Version                                  Repository    Size
+===============================================================================================================
+Installing:
+ docker                                   x86_64   2:1.13.1-75.git8633870.el7.centos        extras        16 M
+ kubeadm                                  x86_64   1.12.2-0                                 kubernetes   7.2 M
+Installing for dependencies:
+ PyYAML                                   x86_64   3.10-11.el7                              base         153 k
+ atomic-registries                        x86_64   1:1.22.1-25.git5a342e3.el7.centos        extras        35 k
+ audit-libs-python                        x86_64   2.8.1-3.el7_5.1                          updates       75 k
+ checkpolicy                              x86_64   2.5-6.el7                                base         294 k
+ container-selinux                        noarch   2:2.68-1.el7                             extras        36 k
+ container-storage-setup                  noarch   0.11.0-2.git5eaf76c.el7                  extras        35 k
+ cri-tools                                x86_64   1.12.0-0                                 kubernetes   4.2 M
+ docker-client                            x86_64   2:1.13.1-75.git8633870.el7.centos        extras       3.8 M
+ docker-common                            x86_64   2:1.13.1-75.git8633870.el7.centos        extras        93 k
+ kubectl                                  x86_64   1.12.2-0                                 kubernetes   7.7 M
+ kubelet                                  x86_64   1.12.2-0                                 kubernetes    19 M
+ kubernetes-cni                           x86_64   0.6.0-0                                  kubernetes   8.6 M
+ libcgroup                                x86_64   0.41-15.el7                              base          65 k
+ libsemanage-python                       x86_64   2.5-11.el7                               base         112 k
+ libyaml                                  x86_64   0.1.4-11.el7_0                           base          55 k
+ oci-register-machine                     x86_64   1:0-6.git2b44233.el7                     extras       1.1 M
+ oci-systemd-hook                         x86_64   1:0.1.17-2.git83283a0.el7                extras        33 k
+ oci-umount                               x86_64   2:2.3.3-3.gite3c9055.el7                 extras        32 k
+ policycoreutils-python                   x86_64   2.5-22.el7                               base         454 k
+ python-IPy                               noarch   0.75-6.el7                               base          32 k
+ python-backports                         x86_64   1.0-8.el7                                base         5.8 k
+ python-backports-ssl_match_hostname      noarch   3.5.0.1-1.el7                            base          13 k
+ python-ipaddress                         noarch   1.0.16-2.el7                             base          34 k
+ python-pytoml                            noarch   0.1.14-1.git7dea353.el7                  extras        18 k
+ python-setuptools                        noarch   0.9.8-7.el7                              base         397 k
+ setools-libs                             x86_64   3.3.8-2.el7                              base         619 k
+ skopeo-containers                        x86_64   1:0.1.31-1.dev.gitae64ff7.el7.centos     extras        17 k
+ socat                                    x86_64   1.7.3.2-2.el7                            base         290 k
+ subscription-manager-rhsm-certificates   x86_64   1.20.11-1.el7.centos                     base         195 k
+
+Transaction Summary
+===============================================================================================================
+Install  2 Packages (+29 Dependent packages)
+
+Total download size: 71 M
+Installed size: 318 M
+Downloading packages:
+(1/31): atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_64.rpm                    |  35 kB  00:00:00
+(2/31): container-storage-setup-0.11.0-2.git5eaf76c.el7.noarch.rpm                      |  35 kB  00:00:00
+(3/31): PyYAML-3.10-11.el7.x86_64.rpm                                                   | 153 kB  00:00:00
+(4/31): container-selinux-2.68-1.el7.noarch.rpm                                         |  36 kB  00:00:00
+(5/31): audit-libs-python-2.8.1-3.el7_5.1.x86_64.rpm                                    |  75 kB  00:00:00
+(6/31): checkpolicy-2.5-6.el7.x86_64.rpm                                                | 294 kB  00:00:00
+(7/31): docker-client-1.13.1-75.git8633870.el7.centos.x86_64.rpm                        | 3.8 MB  00:00:00
+(8/31): docker-common-1.13.1-75.git8633870.el7.centos.x86_64.rpm                        |  93 kB  00:00:00
+(9/31): docker-1.13.1-75.git8633870.el7.centos.x86_64.rpm                               |  16 MB  00:00:02
+warning: /var/cache/yum/x86_64/7/kubernetes/packages/53edc739a0e51a4c17794de26b13ee5df939bd3161b37f503fe2af8980                                                         b41a89-cri-tools-1.12.0-0.x86_64.rpm: Header V4 RSA/SHA512 Signature, key ID 3e1ba8d5: NOKEY
+Public key for 53edc739a0e51a4c17794de26b13ee5df939bd3161b37f503fe2af8980b41a89-cri-tools-1.12.0-0.x86_64.rpm i                                                         s not installed
+(10/31): 53edc739a0e51a4c17794de26b13ee5df939bd3161b37f503fe2af8980b41a89-cri-tools-1.1 | 4.2 MB  00:00:06
+(11/31): ead06eb2dc5ff86ca39823fa5f9e944b2f197e681b76ea0ba4a72f5ca6c51f32-kubectl-1.12. | 7.7 MB  00:00:01
+(12/31): 6bd058ff754287c0b6b7431ee8f08bd35af40b0b1d098d94acf1448de0c8053b-kubeadm-1.12. | 7.2 MB  00:00:07
+(13/31): libcgroup-0.41-15.el7.x86_64.rpm                                               |  65 kB  00:00:00
+(14/31): libyaml-0.1.4-11.el7_0.x86_64.rpm                                              |  55 kB  00:00:00
+(15/31): oci-systemd-hook-0.1.17-2.git83283a0.el7.x86_64.rpm                            |  33 kB  00:00:00
+(16/31): oci-umount-2.3.3-3.gite3c9055.el7.x86_64.rpm                                   |  32 kB  00:00:00
+(17/31): policycoreutils-python-2.5-22.el7.x86_64.rpm                                   | 454 kB  00:00:00
+(18/31): python-IPy-0.75-6.el7.noarch.rpm                                               |  32 kB  00:00:00
+(19/31): python-backports-1.0-8.el7.x86_64.rpm                                          | 5.8 kB  00:00:00
+(20/31): python-backports-ssl_match_hostname-3.5.0.1-1.el7.noarch.rpm                   |  13 kB  00:00:00
+(21/31): python-ipaddress-1.0.16-2.el7.noarch.rpm                                       |  34 kB  00:00:00
+(22/31): python-pytoml-0.1.14-1.git7dea353.el7.noarch.rpm                               |  18 kB  00:00:00
+(23/31): python-setuptools-0.9.8-7.el7.noarch.rpm                                       | 397 kB  00:00:00
+(24/31): setools-libs-3.3.8-2.el7.x86_64.rpm                                            | 619 kB  00:00:00
+(25/31): skopeo-containers-0.1.31-1.dev.gitae64ff7.el7.centos.x86_64.rpm                |  17 kB  00:00:00
+(26/31): socat-1.7.3.2-2.el7.x86_64.rpm                                                 | 290 kB  00:00:00
+(27/31): subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64.rpm         | 195 kB  00:00:00
+(28/31): fe33057ffe95bfae65e2f269e1b05e99308853176e24a4d027bc082b471a07c0-kubernetes-cn | 8.6 MB  00:00:02
+(29/31): c2c59cf03fa14b8d91026c94d63c877091d54ae8492ee3f49faa7aeccd5cac3f-kubelet-1.12. |  19 MB  00:00:04
+(30/31): libsemanage-python-2.5-11.el7.x86_64.rpm                                       | 112 kB  00:00:05
+(31/31): oci-register-machine-0-6.git2b44233.el7.x86_64.rpm                             | 1.1 MB  00:00:05
+---------------------------------------------------------------------------------------------------------------
+Total                                                                          4.8 MB/s |  71 MB  00:00:14
+Retrieving key from https://packages.cloud.google.com/yum/doc/yum-key.gpg
+Importing GPG key 0xA7317B0F:
+ Userid     : "Google Cloud Packages Automatic Signing Key <gc-team@google.com>"
+ Fingerprint: d0bc 747f d8ca f711 7500 d6fa 3746 c208 a731 7b0f
+ From       : https://packages.cloud.google.com/yum/doc/yum-key.gpg
+Retrieving key from https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+Importing GPG key 0x3E1BA8D5:
+ Userid     : "Google Cloud Packages RPM Signing Key <gc-team@google.com>"
+ Fingerprint: 3749 e1ba 95a8 6ce0 5454 6ed2 f09c 394c 3e1b a8d5
+ From       : https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : checkpolicy-2.5-6.el7.x86_64                                                               1/31
+  Installing : socat-1.7.3.2-2.el7.x86_64                                                                 2/31
+  Installing : kubernetes-cni-0.6.0-0.x86_64                                                              3/31
+  Installing : kubelet-1.12.2-0.x86_64                                                                    4/31
+  Installing : python-ipaddress-1.0.16-2.el7.noarch                                                       5/31
+  Installing : libyaml-0.1.4-11.el7_0.x86_64                                                              6/31
+  Installing : PyYAML-3.10-11.el7.x86_64                                                                  7/31
+  Installing : python-backports-1.0-8.el7.x86_64                                                          8/31
+  Installing : python-backports-ssl_match_hostname-3.5.0.1-1.el7.noarch                                   9/31
+  Installing : python-setuptools-0.9.8-7.el7.noarch                                                      10/31
+  Installing : 2:oci-umount-2.3.3-3.gite3c9055.el7.x86_64                                                11/31
+  Installing : 1:oci-register-machine-0-6.git2b44233.el7.x86_64                                          12/31
+  Installing : cri-tools-1.12.0-0.x86_64                                                                 13/31
+  Installing : libcgroup-0.41-15.el7.x86_64                                                              14/31
+  Installing : 1:oci-systemd-hook-0.1.17-2.git83283a0.el7.x86_64                                         15/31
+  Installing : python-pytoml-0.1.14-1.git7dea353.el7.noarch                                              16/31
+  Installing : 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_64                                17/31
+  Installing : setools-libs-3.3.8-2.el7.x86_64                                                           18/31
+  Installing : python-IPy-0.75-6.el7.noarch                                                              19/31
+  Installing : 1:skopeo-containers-0.1.31-1.dev.gitae64ff7.el7.centos.x86_64                             20/31
+  Installing : container-storage-setup-0.11.0-2.git5eaf76c.el7.noarch                                    21/31
+  Installing : audit-libs-python-2.8.1-3.el7_5.1.x86_64                                                  22/31
+  Installing : subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64                        23/31
+  Installing : libsemanage-python-2.5-11.el7.x86_64                                                      24/31
+  Installing : policycoreutils-python-2.5-22.el7.x86_64                                                  25/31
+  Installing : 2:container-selinux-2.68-1.el7.noarch                                                     26/31
+setsebool:  SELinux is disabled.
+  Installing : 2:docker-common-1.13.1-75.git8633870.el7.centos.x86_64                                    27/31
+  Installing : 2:docker-client-1.13.1-75.git8633870.el7.centos.x86_64                                    28/31
+  Installing : kubectl-1.12.2-0.x86_64                                                                   29/31
+  Installing : kubeadm-1.12.2-0.x86_64                                                                   30/31
+  Installing : 2:docker-1.13.1-75.git8633870.el7.centos.x86_64                                           31/31
+  Verifying  : kubeadm-1.12.2-0.x86_64                                                                    1/31
+  Verifying  : kubectl-1.12.2-0.x86_64                                                                    2/31
+  Verifying  : libsemanage-python-2.5-11.el7.x86_64                                                       3/31
+  Verifying  : python-backports-ssl_match_hostname-3.5.0.1-1.el7.noarch                                   4/31
+  Verifying  : subscription-manager-rhsm-certificates-1.20.11-1.el7.centos.x86_64                         5/31
+  Verifying  : audit-libs-python-2.8.1-3.el7_5.1.x86_64                                                   6/31
+  Verifying  : 2:docker-common-1.13.1-75.git8633870.el7.centos.x86_64                                     7/31
+  Verifying  : 2:container-selinux-2.68-1.el7.noarch                                                      8/31
+  Verifying  : container-storage-setup-0.11.0-2.git5eaf76c.el7.noarch                                     9/31
+  Verifying  : python-setuptools-0.9.8-7.el7.noarch                                                      10/31
+  Verifying  : 1:skopeo-containers-0.1.31-1.dev.gitae64ff7.el7.centos.x86_64                             11/31
+  Verifying  : policycoreutils-python-2.5-22.el7.x86_64                                                  12/31
+  Verifying  : kubelet-1.12.2-0.x86_64                                                                   13/31
+  Verifying  : python-IPy-0.75-6.el7.noarch                                                              14/31
+  Verifying  : 2:docker-client-1.13.1-75.git8633870.el7.centos.x86_64                                    15/31
+  Verifying  : setools-libs-3.3.8-2.el7.x86_64                                                           16/31
+  Verifying  : python-pytoml-0.1.14-1.git7dea353.el7.noarch                                              17/31
+  Verifying  : 1:oci-systemd-hook-0.1.17-2.git83283a0.el7.x86_64                                         18/31
+  Verifying  : libcgroup-0.41-15.el7.x86_64                                                              19/31
+  Verifying  : cri-tools-1.12.0-0.x86_64                                                                 20/31
+  Verifying  : kubernetes-cni-0.6.0-0.x86_64                                                             21/31
+  Verifying  : 1:oci-register-machine-0-6.git2b44233.el7.x86_64                                          22/31
+  Verifying  : 2:oci-umount-2.3.3-3.gite3c9055.el7.x86_64                                                23/31
+  Verifying  : python-backports-1.0-8.el7.x86_64                                                         24/31
+  Verifying  : 2:docker-1.13.1-75.git8633870.el7.centos.x86_64                                           25/31
+  Verifying  : libyaml-0.1.4-11.el7_0.x86_64                                                             26/31
+  Verifying  : python-ipaddress-1.0.16-2.el7.noarch                                                      27/31
+  Verifying  : PyYAML-3.10-11.el7.x86_64                                                                 28/31
+  Verifying  : 1:atomic-registries-1.22.1-25.git5a342e3.el7.centos.x86_64                                29/31
+  Verifying  : socat-1.7.3.2-2.el7.x86_64                                                                30/31
+  Verifying  : checkpolicy-2.5-6.el7.x86_64                                                              31/31
+
+Installed:
+  docker.x86_64 2:1.13.1-75.git8633870.el7.centos                   kubeadm.x86_64 0:1.12.2-0
+
+Dependency Installed:
+  PyYAML.x86_64 0:3.10-11.el7
+  atomic-registries.x86_64 1:1.22.1-25.git5a342e3.el7.centos
+  audit-libs-python.x86_64 0:2.8.1-3.el7_5.1
+  checkpolicy.x86_64 0:2.5-6.el7
+  container-selinux.noarch 2:2.68-1.el7
+  container-storage-setup.noarch 0:0.11.0-2.git5eaf76c.el7
+  cri-tools.x86_64 0:1.12.0-0
+  docker-client.x86_64 2:1.13.1-75.git8633870.el7.centos
+  docker-common.x86_64 2:1.13.1-75.git8633870.el7.centos
+  kubectl.x86_64 0:1.12.2-0
+  kubelet.x86_64 0:1.12.2-0
+  kubernetes-cni.x86_64 0:0.6.0-0
+  libcgroup.x86_64 0:0.41-15.el7
+  libsemanage-python.x86_64 0:2.5-11.el7
+  libyaml.x86_64 0:0.1.4-11.el7_0
+  oci-register-machine.x86_64 1:0-6.git2b44233.el7
+  oci-systemd-hook.x86_64 1:0.1.17-2.git83283a0.el7
+  oci-umount.x86_64 2:2.3.3-3.gite3c9055.el7
+  policycoreutils-python.x86_64 0:2.5-22.el7
+  python-IPy.noarch 0:0.75-6.el7
+  python-backports.x86_64 0:1.0-8.el7
+  python-backports-ssl_match_hostname.noarch 0:3.5.0.1-1.el7
+  python-ipaddress.noarch 0:1.0.16-2.el7
+  python-pytoml.noarch 0:0.1.14-1.git7dea353.el7
+  python-setuptools.noarch 0:0.9.8-7.el7
+  setools-libs.x86_64 0:3.3.8-2.el7
+  skopeo-containers.x86_64 1:0.1.31-1.dev.gitae64ff7.el7.centos
+  socat.x86_64 0:1.7.3.2-2.el7
+  subscription-manager-rhsm-certificates.x86_64 0:1.20.11-1.el7.centos
+
+Complete!
+[root@k2 ~]# exit
+logout
+Connection to k2 closed.
+[root@k8 ~]# systemctl restart docker && systemctl enable docker
+Created symlink from /etc/systemd/system/multi-user.target.wants/docker.service to /usr/lib/systemd/system/dock                                                         er.service.
+[root@k8 ~]#  systemctl  restart kubelet && systemctl enable kubelet
+Created symlink from /etc/systemd/system/multi-user.target.wants/kubelet.service to /etc/systemd/system/kubelet                                                         .service.
+[root@k8 ~]#  kubeadm init
+I1028 01:05:39.072461   20678 version.go:93] could not fetch a Kubernetes version from the internet: unable to                                                          get URL "https://dl.k8s.io/release/stable-1.txt": Get https://storage.googleapis.com/kubernetes-release/release                                                         /stable-1.txt: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting                                                          headers)
+I1028 01:05:39.072599   20678 version.go:94] falling back to the local client version: v1.12.2
+[init] using Kubernetes version: v1.12.2
+[preflight] running pre-flight checks
+[preflight] Some fatal errors occurred:
+        [ERROR Swap]: running with swap on is not supported. Please disable swap
+[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`
+[root@k8 ~]# swapoff -a
+[root@k8 ~]# vim /etc/fstab
+[root@k8 ~]#  cat <<EOF > /etc/sysctl.d/k8s.conf
+> net.bridge.bridge-nf-call-ip6tables = 1
+> net.bridge.bridge-nf-call-iptables = 1
+> EOF
+[root@k8 ~]#  sysctl --system
+* Applying /usr/lib/sysctl.d/00-system.conf ...
+net.bridge.bridge-nf-call-ip6tables = 0
+net.bridge.bridge-nf-call-iptables = 0
+net.bridge.bridge-nf-call-arptables = 0
+* Applying /usr/lib/sysctl.d/10-default-yama-scope.conf ...
+kernel.yama.ptrace_scope = 0
+* Applying /usr/lib/sysctl.d/50-default.conf ...
+kernel.sysrq = 16
+kernel.core_uses_pid = 1
+net.ipv4.conf.default.rp_filter = 1
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.default.promote_secondaries = 1
+net.ipv4.conf.all.promote_secondaries = 1
+fs.protected_hardlinks = 1
+fs.protected_symlinks = 1
+* Applying /usr/lib/sysctl.d/60-libvirtd.conf ...
+fs.aio-max-nr = 1048576
+* Applying /usr/lib/sysctl.d/99-docker.conf ...
+fs.may_detach_mounts = 1
+* Applying /etc/sysctl.d/99-sysctl.conf ...
+* Applying /etc/sysctl.d/k8s.conf ...
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+* Applying /etc/sysctl.conf ...
+[root@k8 ~]#  kubeadm init
+[init] using Kubernetes version: v1.12.2
+[preflight] running pre-flight checks
+[preflight/images] Pulling images required for setting up a Kubernetes cluster
+[preflight/images] This might take a minute or two, depending on the speed of your internet connection
+[preflight/images] You can also perform this action in beforehand using 'kubeadm config images pull'
+[kubelet] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+[kubelet] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+[preflight] Activating the kubelet service
+[certificates] Generated front-proxy-ca certificate and key.
+[certificates] Generated front-proxy-client certificate and key.
+[certificates] Generated etcd/ca certificate and key.
+[certificates] Generated etcd/server certificate and key.
+[certificates] etcd/server serving cert is signed for DNS names [k8.bc.ca localhost] and IPs [127.0.0.1 ::1]
+[certificates] Generated etcd/healthcheck-client certificate and key.
+[certificates] Generated apiserver-etcd-client certificate and key.
+[certificates] Generated etcd/peer certificate and key.
+[certificates] etcd/peer serving cert is signed for DNS names [k8.bc.ca localhost] and IPs [192.168.1.100 127.0                                                         .0.1 ::1]
+[certificates] Generated ca certificate and key.
+[certificates] Generated apiserver certificate and key.
+[certificates] apiserver serving cert is signed for DNS names [k8.bc.ca kubernetes kubernetes.default kubernete                                                         s.default.svc kubernetes.default.svc.cluster.local] and IPs [10.96.0.1 192.168.1.100]
+[certificates] Generated apiserver-kubelet-client certificate and key.
+[certificates] valid certificates and keys now exist in "/etc/kubernetes/pki"
+[certificates] Generated sa key and public key.
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/admin.conf"
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/kubelet.conf"
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/controller-manager.conf"
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/scheduler.conf"
+[controlplane] wrote Static Pod manifest for component kube-apiserver to "/etc/kubernetes/manifests/kube-apiser                                                         ver.yaml"
+[controlplane] wrote Static Pod manifest for component kube-controller-manager to "/etc/kubernetes/manifests/ku                                                         be-controller-manager.yaml"
+[controlplane] wrote Static Pod manifest for component kube-scheduler to "/etc/kubernetes/manifests/kube-schedu                                                         ler.yaml"
+[etcd] Wrote Static Pod manifest for a local etcd instance to "/etc/kubernetes/manifests/etcd.yaml"
+[init] waiting for the kubelet to boot up the control plane as Static Pods from directory "/etc/kubernetes/mani                                                         fests"
+[init] this might take a minute or longer if the control plane images have to be pulled
+[apiclient] All control plane components are healthy after 30.516753 seconds
+[uploadconfig] storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
+[kubelet] Creating a ConfigMap "kubelet-config-1.12" in namespace kube-system with the configuration for the ku                                                         belets in the cluster
+[markmaster] Marking the node k8.bc.ca as master by adding the label "node-role.kubernetes.io/master=''"
+[markmaster] Marking the node k8.bc.ca as master by adding the taints [node-role.kubernetes.io/master:NoSchedul                                                         e]
+[patchnode] Uploading the CRI Socket information "/var/run/dockershim.sock" to the Node API object "k8.bc.ca" a                                                         s an annotation
+[bootstraptoken] using token: 5wbpmx.tpn1qxytrndy2hpy
+[bootstraptoken] configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get lo                                                         ng term certificate credentials
+[bootstraptoken] configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a No                                                         de Bootstrap Token
+[bootstraptoken] configured RBAC rules to allow certificate rotation for all node client certificates in the cl                                                         uster
+[bootstraptoken] creating the "cluster-info" ConfigMap in the "kube-public" namespace
+[addons] Applied essential addon: CoreDNS
+[addons] Applied essential addon: kube-proxy
+
+Your Kubernetes master has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+You can now join any number of machines by running the following on each node
+as root:
+
+  kubeadm join 192.168.1.100:6443 --token 5wbpmx.tpn1qxytrndy2hpy --discovery-token-ca-cert-hash sha256:dfe6c82                                                         2d5b6966f3aa35b0baacca9fbfb2779d8eaa7c6c80487c4b4f9843578
+
+[root@k8 ~]# vim k8.txt
+[root@k8 ~]#  mkdir -p $HOME/.kube
+[root@k8 ~]#  cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+[root@k8 ~]# chown $(id -u):$(id -g) $HOME/.kube/config
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE     VERSION
+k8.bc.ca   NotReady   master   2m24s   v1.12.2
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE     VERSION
+k8.bc.ca   NotReady   master   2m29s   v1.12.2
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE     VERSION
+k8.bc.ca   NotReady   master   2m30s   v1.12.2
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE     VERSION
+k8.bc.ca   NotReady   master   2m32s   v1.12.2
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE     VERSION
+k8.bc.ca   NotReady   master   2m33s   v1.12.2
+[root@k8 ~]# kubectl get pods -o wide;
+No resources found.
+[root@k8 ~]# kubectl get pods -all-namespaces;
+Flag --show-all has been deprecated, will be removed in an upcoming release
+No resources found.
+[root@k8 ~]# kubectl get pods -all-namespaces
+Flag --show-all has been deprecated, will be removed in an upcoming release
+No resources found.
+[root@k8 ~]# kubectl get pods --all-namespaces
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-576cbf47c7-85bzh           0/1     Pending   0          3m32s
+kube-system   coredns-576cbf47c7-g4s5t           0/1     Pending   0          3m32s
+kube-system   etcd-k8.bc.ca                      1/1     Running   0          2m52s
+kube-system   kube-apiserver-k8.bc.ca            1/1     Running   0          2m52s
+kube-system   kube-controller-manager-k8.bc.ca   1/1     Running   0          2m45s
+kube-system   kube-proxy-cxjpn                   1/1     Running   0          3m32s
+kube-system   kube-scheduler-k8.bc.ca            1/1     Running   0          2m58s
+[root@k8 ~]# kubectl get pods --all-namespaces
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-576cbf47c7-85bzh           0/1     Pending   0          3m45s
+kube-system   coredns-576cbf47c7-g4s5t           0/1     Pending   0          3m45s
+kube-system   etcd-k8.bc.ca                      1/1     Running   0          3m5s
+kube-system   kube-apiserver-k8.bc.ca            1/1     Running   0          3m5s
+kube-system   kube-controller-manager-k8.bc.ca   1/1     Running   0          2m58s
+kube-system   kube-proxy-cxjpn                   1/1     Running   0          3m45s
+kube-system   kube-scheduler-k8.bc.ca            1/1     Running   0          3m11s
+[root@k8 ~]# kubectl get pods --all-namespaces
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-576cbf47c7-85bzh           0/1     Pending   0          3m49s
+kube-system   coredns-576cbf47c7-g4s5t           0/1     Pending   0          3m49s
+kube-system   etcd-k8.bc.ca                      1/1     Running   0          3m9s
+kube-system   kube-apiserver-k8.bc.ca            1/1     Running   0          3m9s
+kube-system   kube-controller-manager-k8.bc.ca   1/1     Running   0          3m2s
+kube-system   kube-proxy-cxjpn                   1/1     Running   0          3m49s
+kube-system   kube-scheduler-k8.bc.ca            1/1     Running   0          3m15s
+[root@k8 ~]# export kubever=$(kubectl version | base64 | tr -d '\n')
+[root@k8 ~]#  kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+serviceaccount/weave-net created
+clusterrole.rbac.authorization.k8s.io/weave-net created
+clusterrolebinding.rbac.authorization.k8s.io/weave-net created
+role.rbac.authorization.k8s.io/weave-net created
+rolebinding.rbac.authorization.k8s.io/weave-net created
+daemonset.extensions/weave-net created
+[root@k8 ~]#  kubectl get nodes
+NAME       STATUS     ROLES    AGE    VERSION
+k8.bc.ca   NotReady   master   5m4s   v1.12.2
+[root@k8 ~]#  kubectl get nodes
+NAME       STATUS     ROLES    AGE     VERSION
+k8.bc.ca   NotReady   master   5m10s   v1.12.2
+[root@k8 ~]#  kubectl get nodes
+NAME       STATUS     ROLES    AGE     VERSION
+k8.bc.ca   NotReady   master   5m11s   v1.12.2
+[root@k8 ~]#  kubectl get nodes
+NAME       STATUS     ROLES    AGE     VERSION
+k8.bc.ca   NotReady   master   5m12s   v1.12.2
+[root@k8 ~]#  kubectl get nodes
+NAME       STATUS     ROLES    AGE     VERSION
+k8.bc.ca   NotReady   master   5m13s   v1.12.2
+[root@k8 ~]# kubectl  get pods  --all-namespaces
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-576cbf47c7-85bzh           1/1     Running   0          5m13s
+kube-system   coredns-576cbf47c7-g4s5t           1/1     Running   0          5m13s
+kube-system   etcd-k8.bc.ca                      1/1     Running   0          4m33s
+kube-system   kube-apiserver-k8.bc.ca            1/1     Running   0          4m33s
+kube-system   kube-controller-manager-k8.bc.ca   1/1     Running   0          4m26s
+kube-system   kube-proxy-cxjpn                   1/1     Running   0          5m13s
+kube-system   kube-scheduler-k8.bc.ca            1/1     Running   0          4m39s
+kube-system   weave-net-wf6p8                    1/2     Running   0          34s
+[root@k8 ~]# kubectl  get pods  --all-namespaces
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-576cbf47c7-85bzh           1/1     Running   0          5m16s
+kube-system   coredns-576cbf47c7-g4s5t           1/1     Running   0          5m16s
+kube-system   etcd-k8.bc.ca                      1/1     Running   0          4m36s
+kube-system   kube-apiserver-k8.bc.ca            1/1     Running   0          4m36s
+kube-system   kube-controller-manager-k8.bc.ca   1/1     Running   0          4m29s
+kube-system   kube-proxy-cxjpn                   1/1     Running   0          5m16s
+kube-system   kube-scheduler-k8.bc.ca            1/1     Running   0          4m42s
+kube-system   weave-net-wf6p8                    1/2     Running   0          37s
+[root@k8 ~]# kubectl  get pods  --all-namespaces
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-576cbf47c7-85bzh           1/1     Running   0          5m17s
+kube-system   coredns-576cbf47c7-g4s5t           1/1     Running   0          5m17s
+kube-system   etcd-k8.bc.ca                      1/1     Running   0          4m37s
+kube-system   kube-apiserver-k8.bc.ca            1/1     Running   0          4m37s
+kube-system   kube-controller-manager-k8.bc.ca   1/1     Running   0          4m30s
+kube-system   kube-proxy-cxjpn                   1/1     Running   0          5m17s
+kube-system   kube-scheduler-k8.bc.ca            1/1     Running   0          4m43s
+kube-system   weave-net-wf6p8                    2/2     Running   0          38s
+[root@k8 ~]#  kubectl get nodes
+NAME       STATUS   ROLES    AGE     VERSION
+k8.bc.ca   Ready    master   5m30s   v1.12.2
+[root@k8 ~]# kubectl  get pods  --all-namespaces
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-576cbf47c7-85bzh           1/1     Running   0          5m24s
+kube-system   coredns-576cbf47c7-g4s5t           1/1     Running   0          5m24s
+kube-system   etcd-k8.bc.ca                      1/1     Running   0          4m44s
+kube-system   kube-apiserver-k8.bc.ca            1/1     Running   0          4m44s
+kube-system   kube-controller-manager-k8.bc.ca   1/1     Running   0          4m37s
+kube-system   kube-proxy-cxjpn                   1/1     Running   0          5m24s
+kube-system   kube-scheduler-k8.bc.ca            1/1     Running   0          4m50s
+kube-system   weave-net-wf6p8                    2/2     Running   0          45s
+[root@k8 ~]# ^C
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE    VERSION
+k1.bc.ca   NotReady   <none>   25s    v1.12.2
+k2.bc.ca   NotReady   <none>   12s    v1.12.2
+k8.bc.ca   Ready      master   8m2s   v1.12.2
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE    VERSION
+k1.bc.ca   NotReady   <none>   29s    v1.12.2
+k2.bc.ca   NotReady   <none>   16s    v1.12.2
+k8.bc.ca   Ready      master   8m6s   v1.12.2
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE    VERSION
+k1.bc.ca   NotReady   <none>   31s    v1.12.2
+k2.bc.ca   NotReady   <none>   18s    v1.12.2
+k8.bc.ca   Ready      master   8m8s   v1.12.2
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE    VERSION
+k1.bc.ca   NotReady   <none>   32s    v1.12.2
+k2.bc.ca   NotReady   <none>   19s    v1.12.2
+k8.bc.ca   Ready      master   8m9s   v1.12.2
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE     VERSION
+k1.bc.ca   NotReady   <none>   34s     v1.12.2
+k2.bc.ca   NotReady   <none>   21s     v1.12.2
+k8.bc.ca   Ready      master   8m11s   v1.12.2
+[root@k8 ~]# kubectl get pods;
+No resources found.
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE     VERSION
+k1.bc.ca   NotReady   <none>   44s     v1.12.2
+k2.bc.ca   NotReady   <none>   31s     v1.12.2
+k8.bc.ca   Ready      master   8m21s   v1.12.2
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE     VERSION
+k1.bc.ca   NotReady   <none>   46s     v1.12.2
+k2.bc.ca   NotReady   <none>   33s     v1.12.2
+k8.bc.ca   Ready      master   8m23s   v1.12.2
+[root@k8 ~]# kubectl get nodes;
+NAME       STATUS     ROLES    AGE     VERSION
+k1.bc.ca   NotReady   <none>   48s     v1.12.2
+k2.bc.ca   NotReady   <none>   35s     v1.12.2
+k8.bc.ca   Ready      master   8m25s   v1.12.2
+[root@k8 ~]# kubectl get nodes
+NAME       STATUS     ROLES    AGE     VERSION
+k1.bc.ca   NotReady   <none>   67s     v1.12.2
+k2.bc.ca   NotReady   <none>   54s     v1.12.2
+k8.bc.ca   Ready      master   8m44s   v1.12.2
+[root@k8 ~]# kubectl get nodes
+NAME       STATUS     ROLES    AGE     VERSION
+k1.bc.ca   NotReady   <none>   71s     v1.12.2
+k2.bc.ca   NotReady   <none>   58s     v1.12.2
+k8.bc.ca   Ready      master   8m48s   v1.12.2
+[root@k8 ~]# kubectl get nodes
+NAME       STATUS     ROLES    AGE     VERSION
+k1.bc.ca   NotReady   <none>   72s     v1.12.2
+k2.bc.ca   NotReady   <none>   59s     v1.12.2
+k8.bc.ca   Ready      master   8m49s   v1.12.2
+[root@k8 ~]# kubectl get nodes
+NAME       STATUS     ROLES    AGE     VERSION
+k1.bc.ca   NotReady   <none>   73s     v1.12.2
+k2.bc.ca   NotReady   <none>   60s     v1.12.2
+k8.bc.ca   Ready      master   8m50s   v1.12.2
+[root@k8 ~]# kubectl get nodes
+NAME       STATUS     ROLES    AGE    VERSION
+k1.bc.ca   NotReady   <none>   90s    v1.12.2
+k2.bc.ca   NotReady   <none>   77s    v1.12.2
+k8.bc.ca   Ready      master   9m7s   v1.12.2
+[root@k8 ~]# kubectl get nodes
+NAME       STATUS     ROLES    AGE    VERSION
+k1.bc.ca   NotReady   <none>   92s    v1.12.2
+k2.bc.ca   NotReady   <none>   79s    v1.12.2
+k8.bc.ca   Ready      master   9m9s   v1.12.2
+[root@k8 ~]# kubectl get nodes
+NAME       STATUS     ROLES    AGE     VERSION
+k1.bc.ca   Ready      <none>   103s    v1.12.2
+k2.bc.ca   NotReady   <none>   90s     v1.12.2
+k8.bc.ca   Ready      master   9m20s   v1.12.2
+[root@k8 ~]# kubectl get nodes
+NAME       STATUS   ROLES    AGE     VERSION
+k1.bc.ca   Ready    <none>   105s    v1.12.2
+k2.bc.ca   Ready    <none>   92s     v1.12.2
+k8.bc.ca   Ready    master   9m22s   v1.12.2
+[root@k8 ~]# kubectl get nodes
+NAME       STATUS   ROLES    AGE     VERSION
+k1.bc.ca   Ready    <none>   107s    v1.12.2
+k2.bc.ca   Ready    <none>   94s     v1.12.2
+k8.bc.ca   Ready    master   9m24s   v1.12.2
+[root@k8 ~]# kubectl get nodes -o wide
+NAME       STATUS   ROLES    AGE     VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE                KERNEL-VER                                                         SION               CONTAINER-RUNTIME
+k1.bc.ca   Ready    <none>   2m9s    v1.12.2   192.168.1.101   <none>        CentOS Linux 7 (Core)   3.10.0-862                                                         .14.4.el7.x86_64   docker://1.13.1
+k2.bc.ca   Ready    <none>   116s    v1.12.2   192.168.1.102   <none>        CentOS Linux 7 (Core)   3.10.0-862                                                         .14.4.el7.x86_64   docker://1.13.1
+k8.bc.ca   Ready    master   9m46s   v1.12.2   192.168.1.100   <none>        CentOS Linux 7 (Core)   3.10.0-862                                                         .14.4.el7.x86_64   docker://1.13.1
+[root@k8 ~]# kubectl get nodes -o wide
+NAME       STATUS   ROLES    AGE     VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE                KERNEL-VERSION               CONTAINER-RUNTI                       ME
+k1.bc.ca   Ready    <none>   2m18s   v1.12.2   192.168.1.101   <none>        CentOS Linux 7 (Core)   3.10.0-862.14.4.el7.x86_64   docker://1.13.1
+k2.bc.ca   Ready    <none>   2m5s    v1.12.2   192.168.1.102   <none>        CentOS Linux 7 (Core)   3.10.0-862.14.4.el7.x86_64   docker://1.13.1
+k8.bc.ca   Ready    master   9m55s   v1.12.2   192.168.1.100   <none>        CentOS Linux 7 (Core)   3.10.0-862.14.4.el7.x86_64   docker://1.13.1
+[root@k8 ~]#
+
