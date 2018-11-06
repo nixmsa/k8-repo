@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: kind: Pod
+metadata:
+  name: sharevol
+  labels:
+    name: sharevol
+spec:
+  containers:
+  - name: c1
+    image: centos:7
+    command:
+      - "bin/bash"
+      - "-c"
+      - "sleep 10000"
+      volumeMounts:
+        - name: xchange
+          mountPatch: "/tmp/xchange"
+
+      - name: c2
+        image: centos:7
+        command:
+          - 
+          - "bin/bash"
+          - "-c"
+          - "sleep 10000"
+         volumeMounts:
+          - name: xchange
+            mountPatch: "/tmp/data"
+  volumes:
+  - name: xchange
+    emptyDir: {}
+    
