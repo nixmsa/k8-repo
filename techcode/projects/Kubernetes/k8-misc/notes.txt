@@ -1,0 +1,98 @@
+[root@k8 k8-misc]#  kubectl get pods --show-labels
+NAME                     READY   STATUS    RESTARTS   AGE     LABELS
+labelex                  1/1     Running   0          3m13s   env=development
+mongo-542ss              0/1     Pending   0          3d21h   app=mongo
+mongo-5465658856-765wp   1/1     Running   0          20m     pod-template-hash=5465658856,run=mongo
+mongo-5465658856-7zgwc   1/1     Running   0          20m     pod-template-hash=5465658856,run=mongo
+mongo-9rsgc              1/1     Running   0          3d21h   app=mongo
+mongo-hsdtl              1/1     Running   0          3d21h   app=mongo
+mongo-lll9r              0/1     Pending   0          20m     app=mongo
+oradb-2j86s              1/1     Running   0          20m     app=oradb
+oradb-gddw6              1/1     Running   0          20m     app=oradb
+oradb-q7s5f              1/1     Running   0          20m     app=oradb
+[root@k8 k8-misc]#
+
+####
+[root@k8 k8-misc]# cat 02.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: labelex
+  labels:
+    env: development
+spec:
+  containers:
+  - name: sise
+    image: mhausenblas/simpleservice:0.5.0
+    ports:
+      - containerPort: 9876
+[root@k8 k8-misc]#
+
+###
+
+[root@k8 k8-misc]# kubectl label pods labelex owner=michael
+
+[root@k8 k8-misc]#  kubectl get pods --show-labels
+NAME                     READY   STATUS    RESTARTS   AGE     LABELS
+labelex                  1/1     Running   0          7m53s   env=development,owner=michael
+mongo-542ss              0/1     Pending   0          3d21h   app=mongo
+mongo-5465658856-765wp   1/1     Running   0          25m     pod-template-hash=5465658856,run=mongo
+mongo-5465658856-7zgwc   1/1     Running   0          25m     pod-template-hash=5465658856,run=mongo
+mongo-9rsgc              1/1     Running   0          3d21h   app=mongo
+mongo-hsdtl              1/1     Running   0          3d21h   app=mongo
+mongo-lll9r              0/1     Pending   0          24m     app=mongo
+oradb-2j86s              1/1     Running   0          24m     app=oradb
+oradb-gddw6              1/1     Running   0          24m     app=oradb
+oradb-q7s5f              1/1     Running   0          24m     app=oradb
+[root@k8 k8-misc]#
+
+###
+[root@k8 k8-misc]# kubectl get pods --selector owner=michael
+NAME      READY   STATUS    RESTARTS   AGE
+labelex   1/1     Running   0          9m12s
+[root@k8 k8-misc]#
+
+
+[root@k8 k8-misc]# [root@k8 k8-misc]# kubectl label pods labelex owner=michael^C
+[root@k8 k8-misc]# kubectl get pods --selector owner=michael
+NAME      READY   STATUS    RESTARTS   AGE
+labelex   1/1     Running   0          9m12s
+[root@k8 k8-misc]# kubectl get pods -l env=development
+NAME      READY   STATUS    RESTARTS   AGE
+labelex   1/1     Running   0          9m47s
+[root@k8 k8-misc]#
+
+#####
+[root@k8 k8-misc]# mv o3.yaml 03.yaml
+[root@k8 k8-misc]# kubectl create -f 03.yaml
+pod/labelexother created
+[root@k8 k8-misc]# kubectl get pods -o wide;
+NAME                     READY   STATUS    RESTARTS   AGE     IP          NODE       NOMINATED NODE
+labelex                  1/1     Running   0          18m     10.47.0.2   k2.bc.ca   <none>
+labelexother             1/1     Running   0          19s     10.47.0.3   k2.bc.ca   <none>
+mongo-542ss              0/1     Pending   0          3d21h   <none>      <none>     <none>
+mongo-5465658856-765wp   1/1     Running   0          35m     10.44.0.2   k1.bc.ca   <none>
+mongo-5465658856-7zgwc   1/1     Running   0          35m     10.44.0.3   k1.bc.ca   <none>
+mongo-9rsgc              1/1     Running   0          3d21h   10.44.0.1   k1.bc.ca   <none>
+mongo-hsdtl              1/1     Running   0          3d21h   10.47.0.1   k2.bc.ca   <none>
+mongo-lll9r              0/1     Pending   0          35m     <none>      <none>     <none>
+oradb-2j86s              1/1     Running   0          35m     10.44.0.6   k1.bc.ca   <none>
+oradb-gddw6              1/1     Running   0          35m     10.44.0.5   k1.bc.ca   <none>
+oradb-q7s5f              1/1     Running   0          35m     10.44.0.4   k1.bc.ca   <none>
+[root@k8 k8-misc]#
+
+
+######
+[root@k8 k8-misc]#  kubectl get pods -l 'env in (production, development)'
+NAME           READY   STATUS    RESTARTS   AGE
+labelex        1/1     Running   0          29m
+labelexother   1/1     Running   0          11m
+[root@k8 k8-misc]#  kubectl get pods -l 'env in (production)'
+NAME           READY   STATUS    RESTARTS   AGE
+labelexother   1/1     Running   0          12m
+[root@k8 k8-misc]#  kubectl get pods -l 'env in (development)'
+NAME      READY   STATUS    RESTARTS   AGE
+labelex   1/1     Running   0          30m
+[root@k8 k8-misc]#
+
+
