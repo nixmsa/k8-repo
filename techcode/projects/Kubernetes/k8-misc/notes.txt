@@ -203,4 +203,191 @@ rcex-sm6ls   1/1     Terminating   0          111s
 rcex-wjzjc   1/1     Terminating   0          6m6s
 [root@k8 k8-misc]#
 
+####
+[root@k8 k8-misc]# kubectl get pod -o wide;
+NAME                           READY   STATUS    RESTARTS   AGE     IP          NODE       NOMINATED NODE
+labelex                        1/1     Running   0          3h22m   10.47.0.2   k2.bc.ca   <none>
+labelexother                   1/1     Running   0          3h5m    10.47.0.3   k2.bc.ca   <none>
+mongo-542ss                    0/1     Pending   0          4d      <none>      <none>     <none>
+mongo-5465658856-765wp         1/1     Running   0          3h40m   10.44.0.2   k1.bc.ca   <none>
+mongo-5465658856-7zgwc         1/1     Running   0          3h40m   10.44.0.3   k1.bc.ca   <none>
+mongo-9rsgc                    1/1     Running   0          4d      10.44.0.1   k1.bc.ca   <none>
+mongo-hsdtl                    1/1     Running   0          4d      10.47.0.1   k2.bc.ca   <none>
+mongo-lll9r                    0/1     Pending   0          3h40m   <none>      <none>     <none>
+oradb-2j86s                    1/1     Running   0          3h40m   10.44.0.6   k1.bc.ca   <none>
+oradb-gddw6                    1/1     Running   0          3h40m   10.44.0.5   k1.bc.ca   <none>
+oradb-q7s5f                    1/1     Running   0          3h40m   10.44.0.4   k1.bc.ca   <none>
+sise-deploy-674b8b85df-sks28   1/1     Running   0          92s     10.47.0.4   k2.bc.ca   <none>
+sise-deploy-674b8b85df-x9gnm   1/1     Running   0          92s     10.44.0.7   k1.bc.ca   <none>
+[root@k8 k8-misc]#  kubectl create -f https://raw.githubusercontent.com/mhausenblas/kbe/master/specs/deployments/d09.yaml
+
+[root@k8 k8-misc]# kubectl get deploy
+NAME          DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+mongo         2         2         2            2           4d
+sise-deploy   2         2         2            2           2m56s
+[root@k8 k8-misc]# ubectl get rs
+bash: ubectl: command not found...
+[root@k8 k8-misc]# kubectl get rs
+NAME                     DESIRED   CURRENT   READY   AGE
+mongo-5465658856         2         2         2       4d
+sise-deploy-674b8b85df   2         2         2       3m19s
+[root@k8 k8-misc]# kubectl get pods
+NAME                           READY   STATUS    RESTARTS   AGE
+labelex                        1/1     Running   0          3h25m
+labelexother                   1/1     Running   0          3h7m
+mongo-542ss                    0/1     Pending   0          4d
+mongo-5465658856-765wp         1/1     Running   0          3h42m
+mongo-5465658856-7zgwc         1/1     Running   0          3h42m
+mongo-9rsgc                    1/1     Running   0          4d
+mongo-hsdtl                    1/1     Running   0          4d
+mongo-lll9r                    0/1     Pending   0          3h42m
+oradb-2j86s                    1/1     Running   0          3h42m
+oradb-gddw6                    1/1     Running   0          3h42m
+oradb-q7s5f                    1/1     Running   0          3h42m
+sise-deploy-674b8b85df-sks28   1/1     Running   0          3m50s
+sise-deploy-674b8b85df-x9gnm   1/1     Running   0          3m50s
+[root@k8 k8-misc]#
+
+
+
+ot@k8 k8-misc]# kubectl get pods -o wide
+NAME                           READY   STATUS    RESTARTS   AGE     IP          NODE       NOMINATED NODE
+labelex                        1/1     Running   0          3h27m   10.47.0.2   k2.bc.ca   <none>
+labelexother                   1/1     Running   0          3h9m    10.47.0.3   k2.bc.ca   <none>
+mongo-542ss                    0/1     Pending   0          4d      <none>      <none>     <none>
+mongo-5465658856-765wp         1/1     Running   0          3h44m   10.44.0.2   k1.bc.ca   <none>
+mongo-5465658856-7zgwc         1/1     Running   0          3h44m   10.44.0.3   k1.bc.ca   <none>
+mongo-9rsgc                    1/1     Running   0          4d      10.44.0.1   k1.bc.ca   <none>
+mongo-hsdtl                    1/1     Running   0          4d      10.47.0.1   k2.bc.ca   <none>
+mongo-lll9r                    0/1     Pending   0          3h44m   <none>      <none>     <none>
+oradb-2j86s                    1/1     Running   0          3h44m   10.44.0.6   k1.bc.ca   <none>
+oradb-gddw6                    1/1     Running   0          3h44m   10.44.0.5   k1.bc.ca   <none>
+oradb-q7s5f                    1/1     Running   0          3h44m   10.44.0.4   k1.bc.ca   <none>
+sise-deploy-674b8b85df-sks28   1/1     Running   0          5m38s   10.47.0.4   k2.bc.ca   <none>
+sise-deploy-674b8b85df-x9gnm   1/1     Running   0          5m38s   10.44.0.7   k1.bc.ca   <none>
+[root@k8 k8-misc]# curl 10.44.0.7:9876/info
+{"host": "10.44.0.7:9876", "version": "0.9", "from": "10.32.0.1"}[root@k8 k8-misc]#
+[root@k8 k8-misc]# curl 10.47.0.4:9876/info
+{"host": "10.47.0.4:9876", "version": "0.9", "from": "10.32.0.1"}[root@k8 k8-misc]#
+
+
+
+ot@k8 k8-misc]# kubectl apply -f https://raw.githubusercontent.com/mhausenblas/kbe/master/specs/deployments/d10.yaml
+Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+deployment.apps/sise-deploy configured
+[root@k8 k8-misc]# kubectl get pods
+NAME                           READY   STATUS        RESTARTS   AGE
+labelex                        1/1     Running       0          3h31m
+labelexother                   1/1     Running       0          3h13m
+mongo-542ss                    0/1     Pending       0          4d
+mongo-5465658856-765wp         1/1     Running       0          3h48m
+mongo-5465658856-7zgwc         1/1     Running       0          3h48m
+mongo-9rsgc                    1/1     Running       0          4d
+mongo-hsdtl                    1/1     Running       0          4d
+mongo-lll9r                    0/1     Pending       0          3h48m
+oradb-2j86s                    1/1     Running       0          3h48m
+oradb-gddw6                    1/1     Running       0          3h48m
+oradb-q7s5f                    1/1     Running       0          3h48m
+sise-deploy-674b8b85df-x9gnm   1/1     Terminating   0          9m52s
+sise-deploy-779c668797-jmkkp   1/1     Running       0          68s
+sise-deploy-779c668797-sqjg2   1/1     Running       0          67s
+[root@k8 k8-misc]#
+
+
+
+ot@k8 k8-misc]# kubectl get rs
+NAME                     DESIRED   CURRENT   READY   AGE
+mongo-5465658856         2         2         2       4d
+sise-deploy-674b8b85df   0         0         0       10m
+sise-deploy-779c668797   2         2         2       2m4s
+[root@k8 k8-misc]# kubectl rollout status deploy/sise-deploy
+deployment "sise-deploy" successfully rolled out
+[root@k8 k8-misc]#
+
+[root@k8 k8-misc]# kubectl get pods -o wide
+NAME                           READY   STATUS        RESTARTS   AGE     IP          NODE       NOMINATED NODE
+labelex                        1/1     Running       0          3h33m   10.47.0.2   k2.bc.ca   <none>
+labelexother                   1/1     Running       0          3h15m   10.47.0.3   k2.bc.ca   <none>
+mongo-542ss                    0/1     Pending       0          4d      <none>      <none>     <none>
+mongo-5465658856-765wp         1/1     Running       0          3h50m   10.44.0.2   k1.bc.ca   <none>
+mongo-5465658856-7zgwc         1/1     Running       0          3h50m   10.44.0.3   k1.bc.ca   <none>
+mongo-9rsgc                    1/1     Running       0          4d      10.44.0.1   k1.bc.ca   <none>
+mongo-hsdtl                    1/1     Running       0          4d      10.47.0.1   k2.bc.ca   <none>
+mongo-lll9r                    0/1     Pending       0          3h50m   <none>      <none>     <none>
+oradb-2j86s                    1/1     Running       0          3h50m   10.44.0.6   k1.bc.ca   <none>
+oradb-gddw6                    1/1     Running       0          3h50m   10.44.0.5   k1.bc.ca   <none>
+oradb-q7s5f                    1/1     Running       0          3h50m   10.44.0.4   k1.bc.ca   <none>
+sise-deploy-674b8b85df-x9gnm   1/1     Terminating   0          12m     10.44.0.7   k1.bc.ca   <none>
+sise-deploy-779c668797-jmkkp   1/1     Running       0          3m26s   10.47.0.5   k2.bc.ca   <none>
+sise-deploy-779c668797-sqjg2   1/1     Running       0          3m25s   10.44.0.8   k1.bc.ca   <none>
+[root@k8 k8-misc]# curl 10.44.0.8:9876/info
+{"host": "10.44.0.8:9876", "version": "1.0", "from": "10.32.0.1"}[root@k8 k8-misc]#
+
+
+ot@k8 k8-misc]#  kubectl rollout history deploy/sise-deploy
+deployment.extensions/sise-deploy
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+
+[root@k8 k8-misc]#
+
+
+ot@k8 k8-misc]# kubectl rollout undo deploy/sise-deploy --to-revision=1
+deployment.extensions/sise-deploy
+[root@k8 k8-misc]# kubectl rollout history deploy/sise-deploy
+deployment.extensions/sise-deploy
+REVISION  CHANGE-CAUSE
+2         <none>
+3         <none>
+
+
+[root@k8 k8-misc]# kubectl get pods
+NAME                           READY   STATUS        RESTARTS   AGE
+labelex                        1/1     Running       0          3h36m
+labelexother                   1/1     Running       0          3h18m
+mongo-542ss                    0/1     Pending       0          4d
+mongo-5465658856-765wp         1/1     Running       0          3h54m
+mongo-5465658856-7zgwc         1/1     Running       0          3h54m
+mongo-9rsgc                    1/1     Running       0          4d
+mongo-hsdtl                    1/1     Running       0          4d
+mongo-lll9r                    0/1     Pending       0          3h54m
+oradb-2j86s                    1/1     Running       0          3h54m
+oradb-gddw6                    1/1     Running       0          3h54m
+oradb-q7s5f                    1/1     Running       0          3h54m
+sise-deploy-674b8b85df-4rlql   1/1     Running       0          55s
+sise-deploy-674b8b85df-mz9gg   1/1     Running       0          56s
+sise-deploy-674b8b85df-x9gnm   1/1     Terminating   0          15m
+sise-deploy-779c668797-sqjg2   1/1     Terminating   0          6m44s
+[root@k8 k8-misc]#
+
+
+ot@k8 k8-misc]# kubectl delete deploy sise-deploy
+deployment.extensions "sise-deploy" deleted
+[root@k8 k8-misc]# kubectl get rc
+NAME    DESIRED   CURRENT   READY   AGE
+mongo   4         4         2       4d
+oradb   3         3         3       4d13h
+[root@k8 k8-misc]# kubectl get rs
+NAME               DESIRED   CURRENT   READY   AGE
+mongo-5465658856   2         2         2       4d
+[root@k8 k8-misc]# kubectl get pod -o wide
+NAME                           READY   STATUS        RESTARTS   AGE     IP          NODE       NOMINATED NODE
+labelex                        1/1     Running       0          3h38m   10.47.0.2   k2.bc.ca   <none>
+labelexother                   1/1     Running       0          3h20m   10.47.0.3   k2.bc.ca   <none>
+mongo-542ss                    0/1     Pending       0          4d      <none>      <none>     <none>
+mongo-5465658856-765wp         1/1     Running       0          3h55m   10.44.0.2   k1.bc.ca   <none>
+mongo-5465658856-7zgwc         1/1     Running       0          3h55m   10.44.0.3   k1.bc.ca   <none>
+mongo-9rsgc                    1/1     Running       0          4d      10.44.0.1   k1.bc.ca   <none>
+mongo-hsdtl                    1/1     Running       0          4d      10.47.0.1   k2.bc.ca   <none>
+mongo-lll9r                    0/1     Pending       0          3h55m   <none>      <none>     <none>
+oradb-2j86s                    1/1     Running       0          3h55m   10.44.0.6   k1.bc.ca   <none>
+oradb-gddw6                    1/1     Running       0          3h55m   10.44.0.5   k1.bc.ca   <none>
+oradb-q7s5f                    1/1     Running       0          3h55m   10.44.0.4   k1.bc.ca   <none>
+sise-deploy-674b8b85df-4rlql   1/1     Terminating   0          2m51s   10.44.0.7   k1.bc.ca   <none>
+sise-deploy-674b8b85df-mz9gg   1/1     Terminating   0          2m52s   10.47.0.4   k2.bc.ca   <none>
+sise-deploy-674b8b85df-x9gnm   1/1     Terminating   0          17m     10.44.0.7   k1.bc.ca   <none>
+sise-deploy-779c668797-sqjg2   1/1     Terminating   0          8m40s   10.44.0.8   k1.bc.ca   <none>
+[root@k8 k8-misc]#
+
 
