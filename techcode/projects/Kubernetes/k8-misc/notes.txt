@@ -383,11 +383,142 @@ mongo-hsdtl                    1/1     Running       0          4d      10.47.0.
 mongo-lll9r                    0/1     Pending       0          3h55m   <none>      <none>     <none>
 oradb-2j86s                    1/1     Running       0          3h55m   10.44.0.6   k1.bc.ca   <none>
 oradb-gddw6                    1/1     Running       0          3h55m   10.44.0.5   k1.bc.ca   <none>
-oradb-q7s5f                    1/1     Running       0          3h55m   10.44.0.4   k1.bc.ca   <none>
-sise-deploy-674b8b85df-4rlql   1/1     Terminating   0          2m51s   10.44.0.7   k1.bc.ca   <none>
+cradb-q7s5f                    1/1     Running       0          3h55m   10.44.0.4   k1.bc.ca   <none>
+spiVersion: v1
+kind: ReplicationController
+metadata:
+  name: rcsise
+spec:
+  replicas: 1
+  selector:
+    app: sise
+  template:
+    metadata:
+      name: somename
+      labels:
+        app: sise
+    spec:
+      containers:
+      - name: sise
+        image:  mhausenblas/simpleservice:0.5.0
+        ports:
+        - containerPort: 9876#M#
+#M#kubectl get pods -o wide;
+NAME                        READY   STATUS    RESTARTS   AGE    IP          NODE            NOMINATED NODE
+hello-world-csxp5           1/1     Running   0          5d4h   10.36.0.3   minion2.bc.ca   <none>
+hello-world-m6hlv           1/1     Running   0          5d4h   10.36.0.4   minion2.bc.ca   <none>
+postgres-5c95b7bcdd-flssf   1/1     Running   0          5d4h   10.36.0.5   minion2.bc.ca   <none>
+postgres-5c95b7bcdd-kdfm4   1/1     Running   0          5d4h   10.36.0.2   minion2.bc.ca   <none>
+rcsise-9xl45                1/1     Running   0          163m   10.44.0.5   minion1.bc.ca   <none>
+sharevol                    2/2     Running   8          45h    10.44.0.2   minion1.bc.ca   <none>
+twocontainer                1/1     Running   0          20h    10.44.0.4   minion1.bc.ca   <none>
+#M#
+
+cse-deploy-674b8b85df-4rlql   1/1     Terminating   0          2m51s   10.44.0.7   k1.bc.ca   <none>
 sise-deploy-674b8b85df-mz9gg   1/1     Terminating   0          2m52s   10.47.0.4   k2.bc.ca   <none>
 sise-deploy-674b8b85df-x9gnm   1/1     Terminating   0          17m     10.44.0.7   k1.bc.ca   <none>
 sise-deploy-779c668797-sqjg2   1/1     Terminating   0          8m40s   10.44.0.8   k1.bc.ca   <none>
 [root@k8 k8-misc]#
 
+##################
+#M#kubectl get rc
+NAME          DESIRED   CURRENT   READY   AGE
+hello-world   2         2         2       17d
+rcsise        1         1         1       164m
 
+#M#cat rc-01.yaml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: rcsise
+spec:
+  replicas: 1
+  selector:
+    app: sise
+  template:
+    metadata:
+      name: somename
+      labels:
+        app: sise
+    spec:
+      containers:
+      - name: sise
+        image:  mhausenblas/simpleservice:0.5.0
+        ports:
+        - containerPort: 9876#M#
+#M#kubectl get pods -o wide;
+NAME                        READY   STATUS    RESTARTS   AGE    IP          NODE            NOMINATED NODE
+hello-world-csxp5           1/1     Running   0          5d4h   10.36.0.3   minion2.bc.ca   <none>
+hello-world-m6hlv           1/1     Running   0          5d4h   10.36.0.4   minion2.bc.ca   <none>
+postgres-5c95b7bcdd-flssf   1/1     Running   0          5d4h   10.36.0.5   minion2.bc.ca   <none>
+postgres-5c95b7bcdd-kdfm4   1/1     Running   0          5d4h   10.36.0.2   minion2.bc.ca   <none>
+rcsise-9xl45                1/1     Running   0          163m   10.44.0.5   minion1.bc.ca   <none>
+sharevol                    2/2     Running   8          45h    10.44.0.2   minion1.bc.ca   <none>
+twocontainer                1/1     Running   0          20h    10.44.0.4   minion1.bc.ca   <none>
+#M#kubectl get rc
+NAME          DESIRED   CURRENT   READY   AGE
+hello-world   2         2         2       17d
+rcsise        1         1         1       164m
+#M#kubectl get rs
+NAME                   DESIRED   CURRENT   READY   AGE
+postgres-5c95b7bcdd    2         2         2       15d
+test-nginx-bb986f6c9   0         0         0       9d
+#M#
+
+twocontainer                1/1     Running   0          20h
+#M#kubectl get svc
+NAME                  TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+hello-world           LoadBalancer   10.111.24.57     <pending>     80:31219/TCP     17d
+kubernetes            ClusterIP      10.96.0.1        <none>        443/TCP          17d
+mysql                 ClusterIP      10.97.143.134    <none>        3306/TCP         17d
+oradb                 ClusterIP      10.100.220.106   <none>        1521/TCP         5d22h
+postgres-5c95b7bcdd   LoadBalancer   10.107.215.111   <pending>     5342:31994/TCP   15d
+simpleservice         ClusterIP      10.100.146.27    <none>        80/TCP           30s
+test-nginx            ClusterIP      10.108.0.233     <none>        80/TCP           9d
+#M#
+
+#M#cat rc-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: simpleservice
+spec:
+  ports:
+   - port: 80
+     targetPort: 9876s
+  selector:
+    app: sise   #M#
+DD
+ds -o wide
+NAME                        READY   STATUS    RESTARTS   AGE    IP          NODE            NOMINATED NODE
+hello-world-csxp5           1/1     Running   0          5d5h   10.36.0.3   minion2.bc.ca   <none>
+hello-world-m6hlv           1/1     Running   0          5d5h   10.36.0.4   minion2.bc.ca   <none>
+postgres-5c95b7bcdd-flssf   1/1     Running   0          5d5h   10.36.0.5   minion2.bc.ca   <none>
+postgres-5c95b7bcdd-kdfm4   1/1     Running   0          5d5h   10.36.0.2   minion2.bc.ca   <none>
+rcsise-9xl45                1/1     Running   0          178m   10.44.0.5   minion1.bc.ca   <none>
+sharevol                    2/2     Running   8          45h    10.44.0.2   minion1.bc.ca   <none>
+twocontainer                1/1     Running   0          20h    10.44.0.4   minion1.bc.ca   <none>
+#M#
+
+
+#M#kubectl describe svc simpleservice
+Name:              simpleservice
+Namespace:         default
+Labels:            <none>
+Annotations:       <none>
+Selector:          app=sise
+Type:              ClusterIP
+IP:                10.109.5.169
+Port:              <unset>  80/TCP
+TargetPort:        9876/TCP
+Endpoints:         10.44.0.5:9876
+Session Affinity:  None
+Events:            <none>
+#M#
+
+#M#sudo iptables-save | grep simpleservice
+-A KUBE-SERVICES -d 10.109.5.169/32 -p tcp -m comment --comment "default/simpleservice: cluster IP" -m tcp --dport 80 -j KUBE-SVC-EZC6WLOVQADP4IAW
+#M#
+
+#M#curl 10.109.5.169:80/info
+{"host": "10.109.5.169", "version": "0.5.0", "from": "10.32.0.1"}#M#
