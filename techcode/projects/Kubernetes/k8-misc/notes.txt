@@ -95,4 +95,112 @@ NAME      READY   STATUS    RESTARTS   AGE
 labelex   1/1     Running   0          30m
 [root@k8 k8-misc]#
 
+#######
+
+[root@k8 k8-misc]# kubectl create -f 04.yaml
+replicationcontroller/rcex created
+[root@k8 k8-misc]# kubectl get pods -o wide;
+NAME                     READY   STATUS    RESTARTS   AGE     IP          NODE       NOMINATED NODE
+labelex                  1/1     Running   0          43m     10.47.0.2   k2.bc.ca   <none>
+labelexother             1/1     Running   0          26m     10.47.0.3   k2.bc.ca   <none>
+mongo-542ss              0/1     Pending   0          3d21h   <none>      <none>     <none>
+mongo-5465658856-765wp   1/1     Running   0          61m     10.44.0.2   k1.bc.ca   <none>
+mongo-5465658856-7zgwc   1/1     Running   0          61m     10.44.0.3   k1.bc.ca   <none>
+mongo-9rsgc              1/1     Running   0          3d21h   10.44.0.1   k1.bc.ca   <none>
+mongo-hsdtl              1/1     Running   0          3d21h   10.47.0.1   k2.bc.ca   <none>
+mongo-lll9r              0/1     Pending   0          61m     <none>      <none>     <none>
+oradb-2j86s              1/1     Running   0          61m     10.44.0.6   k1.bc.ca   <none>
+oradb-gddw6              1/1     Running   0          61m     10.44.0.5   k1.bc.ca   <none>
+oradb-q7s5f              1/1     Running   0          61m     10.44.0.4   k1.bc.ca   <none>
+rcex-wjzjc               1/1     Running   0          11s     10.47.0.4   k2.bc.ca   <none>
+[root@k8 k8-misc]#
+
+
+[root@k8 k8-misc]# cat 04.yaml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: rcex
+spec:
+  replicas: 1
+  selector:
+    app: sise
+  template:
+    metadata:
+      name: somename
+      labels:
+        app: sise
+    spec:
+      containers:
+      - name: sise
+        image: mhausenblas/simpleservice:0.5.0
+        ports:
+[root@k8 k8-misc]#
+
+
+ot@k8 k8-misc]# kubectl get rc
+NAME    DESIRED   CURRENT   READY   AGE
+mongo   4         4         2       3d21h
+oradb   3         3         3       4d10h
+rcex    1         1         1       94s
+[root@k8 k8-misc]# kubectl get rs
+NAME               DESIRED   CURRENT   READY   AGE
+mongo-5465658856   2         2         2       3d21h
+[root@k8 k8-misc]#
+
+[root@k8 k8-misc]# kubectl get rs
+NAME               DESIRED   CURRENT   READY   AGE
+mongo-5465658856   2         2         2       3d21h
+[root@k8 k8-misc]# kubectl get pods --show-labels
+NAME                     READY   STATUS    RESTARTS   AGE     LABELS
+labelex                  1/1     Running   0          46m     env=development,owner=michael
+labelexother             1/1     Running   0          28m     env=production,owner=michael
+mongo-542ss              0/1     Pending   0          3d21h   app=mongo
+mongo-5465658856-765wp   1/1     Running   0          63m     pod-template-hash=5465658856,run=mongo
+mongo-5465658856-7zgwc   1/1     Running   0          63m     pod-template-hash=5465658856,run=mongo
+mongo-9rsgc              1/1     Running   0          3d22h   app=mongo
+mongo-hsdtl              1/1     Running   0          3d21h   app=mongo
+mongo-lll9r              0/1     Pending   0          63m     app=mongo
+oradb-2j86s              1/1     Running   0          63m     app=oradb
+oradb-gddw6              1/1     Running   0          63m     app=oradb
+oradb-q7s5f              1/1     Running   0          63m     app=oradb
+rcex-wjzjc               1/1     Running   0          2m16s   app=sise
+[root@k8 k8-misc]#
+
+[root@k8 k8-misc]# kubectl scale --replicas=3 rc/rcex
+replicationcontroller/rcex scaled
+[root@k8 k8-misc]# kubectl get pods --show-labels
+NAME                     READY   STATUS    RESTARTS   AGE     LABELS
+labelex                  1/1     Running   0          48m     env=development,owner=michael
+labelexother             1/1     Running   0          30m     env=production,owner=michael
+mongo-542ss              0/1     Pending   0          3d21h   app=mongo
+mongo-5465658856-765wp   1/1     Running   0          65m     pod-template-hash=5465658856,run=mongo
+mongo-5465658856-7zgwc   1/1     Running   0          65m     pod-template-hash=5465658856,run=mongo
+mongo-9rsgc              1/1     Running   0          3d22h   app=mongo
+mongo-hsdtl              1/1     Running   0          3d21h   app=mongo
+mongo-lll9r              0/1     Pending   0          65m     app=mongo
+oradb-2j86s              1/1     Running   0          65m     app=oradb
+oradb-gddw6              1/1     Running   0          65m     app=oradb
+oradb-q7s5f              1/1     Running   0          65m     app=oradb
+rcex-4nt4x               0/1     Pending   0          5s      app=sise
+rcex-sm6ls               1/1     Running   0          5s      app=sise
+rcex-wjzjc               1/1     Running   0          4m20s   app=sise
+[root@k8 k8-misc]#
+
+[root@k8 k8-misc]# kubectl get pods -l app=sise
+NAME         READY   STATUS    RESTARTS   AGE
+rcex-4nt4x   0/1     Pending   0          47s
+rcex-sm6ls   1/1     Running   0          47s
+rcex-wjzjc   1/1     Running   0          5m2s
+[root@k8 k8-misc]#
+
+
+cationcontroller "rcex" deleted
+[root@k8 k8-misc]# kubectl get pods -l app=sise
+NAME         READY   STATUS        RESTARTS   AGE
+rcex-4nt4x   0/1     Terminating   0          111s
+rcex-sm6ls   1/1     Terminating   0          111s
+rcex-wjzjc   1/1     Terminating   0          6m6s
+[root@k8 k8-misc]#
+
 
