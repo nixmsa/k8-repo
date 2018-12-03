@@ -1,0 +1,12 @@
+#M#kubectl get services
+NAME                  TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)
+        AGE
+hello-world           LoadBalancer   10.111.24.57     <pending>     80:31219/TCP      43dkubernetes            ClusterIP      10.96.0.1        <none>        443/TCP           43d
+mongo                 LoadBalancer   10.103.121.179   <pending>     27017:31222/TCP   2m8s
+mysql                 ClusterIP      10.97.143.134    <none>        3306/TCP          43d
+oradb                 ClusterIP      10.100.220.106   <none>        1521/TCP          31dpostgres-5c95b7bcdd   LoadBalancer   10.107.215.111   <pending>     5342:31994/TCP    41d
+simpleservice         ClusterIP      10.109.5.169     <none>        80/TCP            25d
+test-nginx            ClusterIP      10.108.0.233     <none>        80/TCP            35d
+#M#
+
+
