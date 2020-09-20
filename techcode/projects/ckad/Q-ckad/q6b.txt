@@ -1,0 +1,23 @@
+kubectl run nginx02 --image=nginx --restart=Never --dry-run -o yaml > nginx-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx02
+  name: nginx02
+spec:
+  containers:
+  - image: nginx
+    name: nginx02
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+7. Create the same nginx pod with a yaml file
+kubectl get pods
+NAME                       READY   STATUS             RESTARTS   AGE
+multi-cond-pod             1/2     CrashLoopBackOff   20         61m
+nginx                      1/1     Running            0          12m
+nginx01-67fdf8d7c7-4nd29   1/1     Running            1          60m
+nginx02                    1/1     Running            0          47s
