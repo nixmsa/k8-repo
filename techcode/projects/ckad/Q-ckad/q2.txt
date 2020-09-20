@@ -1,0 +1,6 @@
+2. List all the pods in all namespaces
+NAME              STATUS   AGE
+default           Active   63d
+kube-node-lease   Active   63d
+kube-public       Active   63d
+kube-system       Active   63d

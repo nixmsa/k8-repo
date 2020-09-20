@@ -1,0 +1,31 @@
+3. List all the pods in the particular namespace
+NAMESPACE     NAME                                             READY   STATUS    RESTARTS   AGE
+kube-system   calico-kube-controllers-76d4774d89-2ttzf         1/1     Running   0          6d13h
+kube-system   calico-node-2jw8k                                1/1     Running   3          63d
+kube-system   calico-node-7ffzh                                1/1     Running   3          63d
+kube-system   calico-node-d9fzk                                1/1     Running   4          63d
+kube-system   coredns-f9fd979d6-766zn                          1/1     Running   0          6d13h
+kube-system   coredns-f9fd979d6-v98zf                          1/1     Running   0          6d13h
+kube-system   etcd-k8s-master.example.com                      1/1     Running   2          8d
+kube-system   kube-apiserver-k8s-master.example.com            1/1     Running   4          8d
+kube-system   kube-controller-manager-k8s-master.example.com   1/1     Running   11         8d
+kube-system   kube-proxy-5sm7v                                 1/1     Running   1          8d
+kube-system   kube-proxy-76sxq                                 1/1     Running   1          8d
+kube-system   kube-proxy-xfz7j                                 1/1     Running   2          8d
+kube-system   kube-scheduler-k8s-master.example.com            1/1     Running   10         8d
+kube-system   metrics-server-68b849498d-gcg82                  1/1     Running   0          43h
+NAME                                             READY   STATUS    RESTARTS   AGE
+calico-kube-controllers-76d4774d89-2ttzf         1/1     Running   0          6d13h
+calico-node-2jw8k                                1/1     Running   3          63d
+calico-node-7ffzh                                1/1     Running   3          63d
+calico-node-d9fzk                                1/1     Running   4          63d
+coredns-f9fd979d6-766zn                          1/1     Running   0          6d13h
+coredns-f9fd979d6-v98zf                          1/1     Running   0          6d13h
+etcd-k8s-master.example.com                      1/1     Running   2          8d
+kube-apiserver-k8s-master.example.com            1/1     Running   4          8d
+kube-controller-manager-k8s-master.example.com   1/1     Running   11         8d
+kube-proxy-5sm7v                                 1/1     Running   1          8d
+kube-proxy-76sxq                                 1/1     Running   1          8d
+kube-proxy-xfz7j                                 1/1     Running   2          8d
+kube-scheduler-k8s-master.example.com            1/1     Running   10         8d
+metrics-server-68b849498d-gcg82                  1/1     Running   0          43h
