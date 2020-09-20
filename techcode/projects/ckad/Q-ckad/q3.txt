@@ -29,3 +29,4 @@ kube-proxy-76sxq                                 1/1     Running   1          8d
 kube-proxy-xfz7j                                 1/1     Running   2          8d
 kube-scheduler-k8s-master.example.com            1/1     Running   10         8d
 metrics-server-68b849498d-gcg82                  1/1     Running   0          43h
+kubectl get pods --all-namespaces

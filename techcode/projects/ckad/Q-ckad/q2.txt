@@ -4,3 +4,4 @@ default           Active   63d
 kube-node-lease   Active   63d
 kube-public       Active   63d
 kube-system       Active   63d
+kubectl get --all-namespaces
