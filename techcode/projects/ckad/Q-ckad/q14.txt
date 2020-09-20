@@ -1,0 +1,21 @@
+14. Change the Image version to 1.15-alpine for the pod you just created and verify the image version is updated
+
+
+@@@@@
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl run nginx --image=nginx:1.17.4 --restart=Never --port=80
+pod/nginx created
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get pods;
+NAME                       READY   STATUS    RESTARTS   AGE
+nginx                      1/1     Running   0          20s
+nginx01-67fdf8d7c7-4nd29   1/1     Running   1          135m
+nginx02                    1/1     Running   0          75m
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl describe pod nginx | grep Image
+    Image:          nginx:1.17.4
+    Image ID:       docker-pullable://nginx@sha256:77ebc94e0cec30b20f9056bac1066b09fbdc049401b71850922c63fc0cc1762e
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl set  image pod/nginx nginx=nginx:1.15-alpine
+pod/nginx image updated
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl describe pod nginx | grep Image
+    Image:          nginx:1.15-alpine
+    Image ID:       docker-pullable://nginx@sha256:77ebc94e0cec30b20f9056bac1066b09fbdc049401b71850922c63fc0cc1762e
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$
+
