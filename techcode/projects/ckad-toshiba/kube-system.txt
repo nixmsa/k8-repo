@@ -1,0 +1,14 @@
+NAME                                             READY   STATUS    RESTARTS   AGE
+calico-kube-controllers-76d4774d89-79rf5         1/1     Running   1          21d
+calico-node-2jw8k                                1/1     Running   4          64d
+calico-node-7ffzh                                1/1     Running   2          64d
+calico-node-d9fzk                                1/1     Running   3          64d
+coredns-66bff467f8-ccqdj                         1/1     Running   1          21d
+coredns-66bff467f8-lw68m                         1/1     Running   4          64d
+etcd-k8s-master.example.com                      1/1     Running   3          64d
+kube-apiserver-k8s-master.example.com            1/1     Running   4          64d
+kube-controller-manager-k8s-master.example.com   1/1     Running   3          64d
+kube-proxy-gjcbb                                 1/1     Running   4          64d
+kube-proxy-n6kkm                                 1/1     Running   2          64d
+kube-proxy-w6r59                                 1/1     Running   3          64d
+kube-scheduler-k8s-master.example.com            1/1     Running   4          64d
