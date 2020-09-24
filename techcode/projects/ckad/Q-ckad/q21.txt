@@ -1,0 +1,6 @@
+Q21. Create a busybox pod with command sleep 3600
+
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl run busybox --image=busybox --restart=Never -- /bin/sh -c "sleep 3600"
+pod/busybox created
+
+
