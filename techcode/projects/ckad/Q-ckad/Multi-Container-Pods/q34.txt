@@ -1,0 +1,7 @@
+34. Create a Pod with main container busybox and which executes this “while true; do echo ‘Hi I am from Main container’ >> /var/log/index.html; sleep 5; done” and with sidecar container with nginx image which exposes on port 80. Use emptyDir Volume and mount this volume on path /var/log for busybox and on path /usr/share/nginx/html for nginx container. Verify both containers are running.
+
+
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad/Multi-Container-Pods$ kubectl run multi-cont-pod --image=basybox:1.28 --restart=Never --dry-run -o yaml > multi-cont2.yaml
+W0926 19:11:23.231023  288511 helpers.go:535] --dry-run is deprecated and can be replaced with --dry-run=client.
+
+

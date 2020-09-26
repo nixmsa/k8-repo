@@ -1,0 +1,13 @@
+32. Run command ls in the third container busybox3 of the above pod
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad/Multi-Container-Pods$ kubectl exec busybox3 -c busybox2 -- ls
+bin
+dev
+etc
+home
+proc
+root
+sys
+tmp
+usr
+var
+
