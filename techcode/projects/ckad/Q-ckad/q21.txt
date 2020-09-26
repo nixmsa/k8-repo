@@ -1,6 +1,13 @@
 Q21. Create a busybox pod with command sleep 3600
 
-mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl run busybox --image=busybox --restart=Never -- /bin/sh -c "sleep 3600"
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl run busybox --image=busybox --restart=Never -- /bin/sh -c "sleep 90000"
 pod/busybox created
 
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl exec -it busybox -- nslookup 172.16.182.33
+Server:    10.96.0.10
+Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
+
+Name:      172.16.182.33
+Address 1: 172.16.182.33
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$
 
