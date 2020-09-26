@@ -1,0 +1,6 @@
+5. List all the pods showing name and namespace with a json path expression
+multi-cond-pod nginx01-67fdf8d7c7-4nd29 default default
+
+
+
+"kubectl get pods -o=jsonpath="{.items[*]['metadata.name', 'metadata.namespace']}" >>Q-ckad/q5.txt ^Cta.name', 'metadata.namespace']}" 

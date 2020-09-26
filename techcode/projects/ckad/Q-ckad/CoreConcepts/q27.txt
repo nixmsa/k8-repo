@@ -1,0 +1,11 @@
+27. List all the pods sorted by name
+
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get pods --sort-by=.metadata.name
+NAME       READY   STATUS      RESTARTS   AGE
+busybox    1/1     Running     0          53m
+busybox2   0/1     Completed   0          34m
+nginx      1/1     Running     1          2d12h
+nginx2     1/1     Running     0          6m47s
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$
+
+

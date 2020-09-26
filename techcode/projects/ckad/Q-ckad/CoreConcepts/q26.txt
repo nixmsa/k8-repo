@@ -1,0 +1,11 @@
+26. List the nginx pod with custom columns POD_NAME and POD_STATUS
+
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get po -o=custom-columns="POD_NAME:.metadata.name,POD_STATUS:.status.containerStatuses[].state"
+POD_NAME   POD_STATUS
+busybox    map[running:map[startedAt:2020-09-26T15:08:17Z]]
+busybox2   map[terminated:map[containerID:docker://c2fd645ee8ae5eee0407d0b72760e71503d505bac6e78fe3dfe3e06bd73064c9 exitCode:0 finishedAt:2020-09-26T15:27:53Z reason:Completed startedAt:2020-09-26T15:27:53Z]]
+nginx      map[running:map[startedAt:2020-09-26T14:51:09Z]]
+nginx2     map[running:map[startedAt:2020-09-26T15:55:11Z]]
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$
+
+
