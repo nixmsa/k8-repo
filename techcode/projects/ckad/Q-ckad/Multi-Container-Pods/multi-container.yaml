@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: busybox3
+  name: busybox3
+spec:
+  containers:
+  - args:
+    - bin/sh
+    - -c
+    - sleep 3600; ls
+    image: busybox:1.28
+    name: busybox1
+  - args:
+    - bin/sh
+    - -c
+    - sleep 3600; echo "Hello Word";
+    image: busybox:1.28
+    name: busybox2
+  - args:
+    - bin/sh
+    - -c
+    - sleep 3600; echo "this is the third pod";
+    image: busybox:1.28
+    name: busybox3
+  restartPolicy: Never
