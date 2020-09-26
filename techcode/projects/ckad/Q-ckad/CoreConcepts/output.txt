@@ -1,0 +1,1096 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx02
+  name: nginx02
+spec:
+  containers:
+  - image: nginx
+    name: nginx02
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+NAME                     STATUS   ROLES    AGE   VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE           KERNEL-VERSION     CONTAINER-RUNTIME
+k8s-master.example.com   Ready    master   64d   v1.18.6   192.168.0.40   <none>        Ubuntu 20.04 LTS   5.4.0-42-generic   docker://19.3.8
+k8s-node-0.example.com   Ready    <none>   64d   v1.18.6   192.168.0.41   <none>        Ubuntu 20.04 LTS   5.4.0-42-generic   docker://19.3.8
+k8s-node-1.example.com   Ready    <none>   64d   v1.18.6   192.168.0.42   <none>        Ubuntu 20.04 LTS   5.4.0-42-generic   docker://19.3.8
+12. Delete the pod you just created without any delay (force delete)
+kubectl delete po nginx --grace-period=0 --force
+
+
+@@@
+kubectl delete po nginx --grace-period=0 --force
+warning: Immediate deletion does not wait for confirmation that the running resource has been terminated. The resource may continue to run on the cluster indefinitely.
+pod "nginx" force deleted
+
+13. Create the nginx pod with version 1.17.4 and expose it on port 80
+kubectl run nginx --image=nginx:1.17.4 --restart=Never --port=80
+
+
+kubectl run nginx --image=nginx:1.17.4 --restart=Never --port=80
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get pods
+NAME                       READY   STATUS              RESTARTS   AGE
+multi-cond-pod             1/2     CrashLoopBackOff    31         122m
+nginx                      0/1     ContainerCreating   0          18s
+nginx01-67fdf8d7c7-4nd29   1/1     Running             1          121m
+nginx02                    1/1     Running             0          61m
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl describe pod nginx | grep Image
+    Image:          nginx:1.17.4
+    Image ID:       docker-pullable://nginx@sha256:77ebc94e0cec30b20f9056bac1066b09fbdc049401b71850922c63fc0cc1762e
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$
+
+14. Change the Image version to 1.15-alpine for the pod you just created and verify the image version is updated
+
+
+@@@@@
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl run nginx --image=nginx:1.17.4 --restart=Never --port=80
+pod/nginx created
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get pods;
+NAME                       READY   STATUS    RESTARTS   AGE
+nginx                      1/1     Running   0          20s
+nginx01-67fdf8d7c7-4nd29   1/1     Running   1          135m
+nginx02                    1/1     Running   0          75m
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl describe pod nginx | grep Image
+    Image:          nginx:1.17.4
+    Image ID:       docker-pullable://nginx@sha256:77ebc94e0cec30b20f9056bac1066b09fbdc049401b71850922c63fc0cc1762e
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl set  image pod/nginx nginx=nginx:1.15-alpine
+pod/nginx image updated
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl describe pod nginx | grep Image
+    Image:          nginx:1.15-alpine
+    Image ID:       docker-pullable://nginx@sha256:77ebc94e0cec30b20f9056bac1066b09fbdc049401b71850922c63fc0cc1762e
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$
+
+15. Change the Image version back to 1.17.1 for the pod you just updated and observe the changes
+
+
+@@@@
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl set image pod/nginx nginx=nginx:1.17.1
+pod/nginx image updated
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl describe pod nginx | grep Image
+    Image:          nginx:1.17.1
+    Image ID:       docker-pullable://nginx@sha256:57a226fb6ab6823027c0704a9346a890ffb0cacde06bc19bbc234c8720673555
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get po nginx -w
+NAME    READY   STATUS    RESTARTS   AGE
+nginx   1/1     Running   2          14m
+^Cmahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$
+
+16. Check the Image version without the describe command
+
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get po nginx -o jsonpath='{.spec.containers[].image }{"\n"}'
+nginx:1.17.1
+
+
+
+17. Create the nginx pod and execute the simple shell on the pod
+
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl exec -it nginx -- ls
+bin   dev  home  lib64  mnt  proc  run   srv  tmp  var
+boot  etc  lib   media  opt  root  sbin  sys  usr
+
+19. Create a busybox pod and run command ls while creating it and check the logs
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl run busybox --image=busybox --restart=Never -- ls
+pod/busybox created
+mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl logs busybox
+bin
+dev
+etc
+home
+proc
+root
+sys
+tmp
+usr
+var
+
+List all the namespaces in the cluster
+NAME              STATUS   AGE
+default           Active   63d
+kube-node-lease   Active   63d
+kube-public       Active   63d
+kube-system       Active   63d
+kubectl get ns
+Q21. Create a busybox pod with command sleep 3600
+
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl run busybox --image=busybox --restart=Never -- /bin/sh -c "sleep 90000"
+pod/busybox created
+
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl exec -it busybox -- nslookup 172.16.182.33
+Server:    10.96.0.10
+Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
+
+Name:      172.16.182.33
+Address 1: 172.16.182.33
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$
+
+q22.txt 22. Check the connection of the nginx pod from the busybox pod
+
+
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get pods -o wide
+NAME                                READY   STATUS        RESTARTS   AGE     IP              NODE                     NOMINATED NODE   READINESS GATES
+busybox                             1/1     Running       0          21m     172.16.182.31   k8s-node-0.example.com   <none>           <none>
+nginx                               1/1     Running       0          7m25s   172.16.182.32   k8s-node-0.example.com   <none>           <none>
+nginx-deployment-6b474476c4-hhtwq   0/1     Terminating   0          39m     <none>          k8s-node-1.example.com   <none>           <none>
+nginx-deployment-6b474476c4-rblv8   0/1     Terminating   0          39m     <none>          k8s-node-1.example.com   <none>           <none>
+nginx-deployment-6b474476c4-w72th   0/1     Terminating   0          39m     <none>          k8s-node-1.example.com   <none>           <none>
+nginx-web-7748f7f978-2gpqc          0/1     Terminating   0          39m     <none>          k8s-node-1.example.com   <none>           <none>
+nginx-web-7748f7f978-2pxs4          0/1     Terminating   0          39m     <none>          k8s-node-1.example.com   <none>           <none>
+nginx-web-7748f7f978-6fd6n          0/1     Terminating   0          39m     <none>          k8s-node-1.example.com   <none>           <none>
+nginx-web-7748f7f978-vws4w          0/1     Terminating   0          39m     <none>          k8s-node-1.example.com   <none>           <none>
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl exec -it busybox -- nslookup 172.16.182.32
+Server:         10.96.0.10
+Address:        10.96.0.10:53
+
+** server can't find 32.182.16.172.in-addr.arpa: NXDOMAIN
+
+command terminated with exit code 1
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl exec -it busybox -- wget -o-  172.16.182.32
+Connecting to 172.16.182.32 (172.16.182.32:80)
+wget: can't open 'index.html': File exists
+command terminated with exit code 1
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ rm index.html
+rm: cannot remove 'index.html': No such file or directory
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ ls
+nginx-pod.yaml  q12.txt  q14.txt  q16.txt  q19.txt  q21.txt  q2.txt  q4.txt  q6b.txt  q8.txt
+nodes.txt       q13.txt  q15.txt  q17.txt  q1.txt   q22.txt  q3.txt  q5.txt  q6.txt   q9.txt
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl exec -it busybox -- wget -o-  172.16.182.32
+Connecting to 172.16.182.32 (172.16.182.32:80)
+wget: can't open 'index.html': File exists
+command terminated with exit code 1
+Q23 23. Create a busybox pod and echo message ‘How are you’ and delete it manually
+
+Q23 23. Create a busybox pod and echo message ‘How are you’ and delete it manually
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl run busybox2 --image=nginx --restart=Never -it -- echo "how are you"
+how are you
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get pods;
+NAME       READY   STATUS      RESTARTS   AGE
+busybox    1/1     Running     0          19m
+busybox2   0/1     Completed   0          17s
+nginx      1/1     Running     1          2d12h
+
+24. Create a busybox pod and echo message ‘How are you’ and have it deleted immediately
+
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl run busybox3 --image=nginx --restart=Never -it --rm -- echo "How are you "
+How are you
+pod "busybox3" deleted
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get pods;
+NAME       READY   STATUS      RESTARTS   AGE
+busybox    1/1     Running     0          42m
+busybox2   0/1     Completed   0          23m
+nginx      1/1     Running     1          2d12h
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$
+
+25. Create an nginx pod and list the pod with different levels of verbosity
+
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl run nginx2 --image=nginx --restart=Never --port=80
+pod/nginx2 created
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get pods nginx2 --v=7
+I0926 15:55:26.502678   89974 loader.go:375] Config loaded from file:  /home/mahsan/.kube/config
+I0926 15:55:26.559186   89974 round_trippers.go:420] GET https://192.168.0.40:6443/api/v1/namespaces/default/pods/nginx2
+I0926 15:55:26.559249   89974 round_trippers.go:427] Request Headers:
+I0926 15:55:26.559263   89974 round_trippers.go:431]     User-Agent: kubectl/v1.18.6 (linux/amd64) kubernetes/dff82dc
+I0926 15:55:26.559274   89974 round_trippers.go:431]     Accept: application/json;as=Table;v=v1;g=meta.k8s.io,application/json;as=Table;v=v1beta1;g=meta.k8s.io,application/json
+I0926 15:55:26.607383   89974 round_trippers.go:446] Response Status: 200 OK in 48 milliseconds
+NAME     READY   STATUS    RESTARTS   AGE
+nginx2   1/1     Running   0          20s
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get pods nginx2 --v=8
+I0926 15:55:42.993796   90323 loader.go:375] Config loaded from file:  /home/mahsan/.kube/config
+I0926 15:55:43.023732   90323 round_trippers.go:420] GET https://192.168.0.40:6443/api/v1/namespaces/default/pods/nginx2
+I0926 15:55:43.023812   90323 round_trippers.go:427] Request Headers:
+I0926 15:55:43.024125   90323 round_trippers.go:431]     Accept: application/json;as=Table;v=v1;g=meta.k8s.io,application/json;as=Table;v=v1beta1;g=meta.k8s.io,application/json
+I0926 15:55:43.024212   90323 round_trippers.go:431]     User-Agent: kubectl/v1.18.6 (linux/amd64) kubernetes/dff82dc
+I0926 15:55:43.059628   90323 round_trippers.go:446] Response Status: 200 OK in 35 milliseconds
+I0926 15:55:43.059719   90323 round_trippers.go:449] Response Headers:
+I0926 15:55:43.059742   90323 round_trippers.go:452]     Cache-Control: no-cache, private
+I0926 15:55:43.059762   90323 round_trippers.go:452]     Content-Type: application/json
+I0926 15:55:43.059780   90323 round_trippers.go:452]     Date: Sat, 26 Sep 2020 15:55:43 GMT
+
+26. List the nginx pod with custom columns POD_NAME and POD_STATUS
+
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get po -o=custom-columns="POD_NAME:.metadata.name,POD_STATUS:.status.containerStatuses[].state"
+POD_NAME   POD_STATUS
+busybox    map[running:map[startedAt:2020-09-26T15:08:17Z]]
+busybox2   map[terminated:map[containerID:docker://c2fd645ee8ae5eee0407d0b72760e71503d505bac6e78fe3dfe3e06bd73064c9 exitCode:0 finishedAt:2020-09-26T15:27:53Z reason:Completed startedAt:2020-09-26T15:27:53Z]]
+nginx      map[running:map[startedAt:2020-09-26T14:51:09Z]]
+nginx2     map[running:map[startedAt:2020-09-26T15:55:11Z]]
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$
+
+
+27. List all the pods sorted by name
+
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get pods --sort-by=.metadata.name
+NAME       READY   STATUS      RESTARTS   AGE
+busybox    1/1     Running     0          53m
+busybox2   0/1     Completed   0          34m
+nginx      1/1     Running     1          2d12h
+nginx2     1/1     Running     0          6m47s
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$
+
+
+28. List all the pods sorted by created timestamp
+
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get pods --sort-by=.metadata.creationTimestamp
+NAME       READY   STATUS      RESTARTS   AGE
+nginx      1/1     Running     1          2d12h
+busybox    1/1     Running     0          57m
+busybox2   0/1     Completed   0          37m
+nginx2     1/1     Running     0          10m
+mahsan@k8s-master:~/project/k8-repo/techcode/projects/ckad/Q-ckad$
+
+2. List all the pods in all namespaces
+NAME              STATUS   AGE
+default           Active   63d
+kube-node-lease   Active   63d
+kube-public       Active   63d
+kube-system       Active   63d
+kubectl get --all-namespaces
+3. List all the pods in the particular namespace
+NAMESPACE     NAME                                             READY   STATUS    RESTARTS   AGE
+kube-system   calico-kube-controllers-76d4774d89-2ttzf         1/1     Running   0          6d13h
+kube-system   calico-node-2jw8k                                1/1     Running   3          63d
+kube-system   calico-node-7ffzh                                1/1     Running   3          63d
+kube-system   calico-node-d9fzk                                1/1     Running   4          63d
+kube-system   coredns-f9fd979d6-766zn                          1/1     Running   0          6d13h
+kube-system   coredns-f9fd979d6-v98zf                          1/1     Running   0          6d13h
+kube-system   etcd-k8s-master.example.com                      1/1     Running   2          8d
+kube-system   kube-apiserver-k8s-master.example.com            1/1     Running   4          8d
+kube-system   kube-controller-manager-k8s-master.example.com   1/1     Running   11         8d
+kube-system   kube-proxy-5sm7v                                 1/1     Running   1          8d
+kube-system   kube-proxy-76sxq                                 1/1     Running   1          8d
+kube-system   kube-proxy-xfz7j                                 1/1     Running   2          8d
+kube-system   kube-scheduler-k8s-master.example.com            1/1     Running   10         8d
+kube-system   metrics-server-68b849498d-gcg82                  1/1     Running   0          43h
+NAME                                             READY   STATUS    RESTARTS   AGE
+calico-kube-controllers-76d4774d89-2ttzf         1/1     Running   0          6d13h
+calico-node-2jw8k                                1/1     Running   3          63d
+calico-node-7ffzh                                1/1     Running   3          63d
+calico-node-d9fzk                                1/1     Running   4          63d
+coredns-f9fd979d6-766zn                          1/1     Running   0          6d13h
+coredns-f9fd979d6-v98zf                          1/1     Running   0          6d13h
+etcd-k8s-master.example.com                      1/1     Running   2          8d
+kube-apiserver-k8s-master.example.com            1/1     Running   4          8d
+kube-controller-manager-k8s-master.example.com   1/1     Running   11         8d
+kube-proxy-5sm7v                                 1/1     Running   1          8d
+kube-proxy-76sxq                                 1/1     Running   1          8d
+kube-proxy-xfz7j                                 1/1     Running   2          8d
+kube-scheduler-k8s-master.example.com            1/1     Running   10         8d
+metrics-server-68b849498d-gcg82                  1/1     Running   0          43h
+kubectl get pods --all-namespaces
+4. List all the services in the particular namespace
+NAMESPACE     NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
+default       kubernetes       ClusterIP   10.96.0.1        <none>        443/TCP                  63d
+kube-system   kube-dns         ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP   63d
+kube-system   metrics-server   ClusterIP   10.108.137.216   <none>        443/TCP                  6d22h
+kubectl get svc --all-namespaces
+5. List all the pods showing name and namespace with a json path expression
+multi-cond-pod nginx01-67fdf8d7c7-4nd29 default default
+
+
+
+"kubectl get pods -o=jsonpath="{.items[*]['metadata.name', 'metadata.namespace']}" >>Q-ckad/q5.txt ^Cta.name', 'metadata.namespace']}" 
+kubectl run nginx02 --image=nginx --restart=Never --dry-run -o yaml > nginx-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx02
+  name: nginx02
+spec:
+  containers:
+  - image: nginx
+    name: nginx02
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+7. Create the same nginx pod with a yaml file
+kubectl get pods
+NAME                       READY   STATUS             RESTARTS   AGE
+multi-cond-pod             1/2     CrashLoopBackOff   20         61m
+nginx                      1/1     Running            0          12m
+nginx01-67fdf8d7c7-4nd29   1/1     Running            1          60m
+nginx02                    1/1     Running            0          47s
+6. Create an nginx pod in a default namespace and verify the pod running
+pod/nginx created
+kubectl run  nginx --image=nginx --restart=Never
+NAME                       READY   STATUS             RESTARTS   AGE
+multi-cond-pod             1/2     CrashLoopBackOff   18         50m
+nginx                      1/1     Running            0          55s
+nginx01-67fdf8d7c7-4nd29   1/1     Running            1          49m
+kubectl get pods nginx02 -o yaml
+8. Output the yaml file of the pod you just created
+9. Output the yaml file of the pod you just created without the cluster-specific information
+kubectl get pods nginx -o yaml --export
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cni.projectcalico.org/podIP: 172.16.122.93/32
+      cni.projectcalico.org/podIPs: 172.16.122.93/32
+    creationTimestamp: "2020-09-20T17:23:33Z"
+    labels:
+      run: multi-cond-pod
+    managedFields:
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            .: {}
+            f:run: {}
+        f:spec:
+          f:containers:
+            k:{"name":"main-container"}:
+              .: {}
+              f:args: {}
+              f:image: {}
+              f:imagePullPolicy: {}
+              f:name: {}
+              f:resources: {}
+              f:terminationMessagePath: {}
+              f:terminationMessagePolicy: {}
+              f:volumeMounts:
+                .: {}
+                k:{"mountPath":"/var/log"}:
+                  .: {}
+                  f:mountPath: {}
+                  f:name: {}
+            k:{"name":"sidecar-container"}:
+              .: {}
+              f:image: {}
+              f:imagePullPolicy: {}
+              f:name: {}
+              f:ports:
+                .: {}
+                k:{"containerPort":80,"protocol":"TCP"}:
+                  .: {}
+                  f:containerPort: {}
+                  f:protocol: {}
+              f:resources: {}
+              f:terminationMessagePath: {}
+              f:terminationMessagePolicy: {}
+              f:volumeMounts:
+                .: {}
+                k:{"mountPath":"/usr/share/nginx/html"}:
+                  .: {}
+                  f:mountPath: {}
+                  f:name: {}
+          f:dnsPolicy: {}
+          f:enableServiceLinks: {}
+          f:restartPolicy: {}
+          f:schedulerName: {}
+          f:securityContext: {}
+          f:terminationGracePeriodSeconds: {}
+          f:volumes:
+            .: {}
+            k:{"name":"var-logs"}:
+              .: {}
+              f:emptyDir: {}
+              f:name: {}
+      manager: kubectl
+      operation: Update
+      time: "2020-09-20T17:23:33Z"
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:cni.projectcalico.org/podIP: {}
+            f:cni.projectcalico.org/podIPs: {}
+      manager: calico
+      operation: Update
+      time: "2020-09-20T18:10:25Z"
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:status:
+          f:conditions:
+            k:{"type":"ContainersReady"}:
+              .: {}
+              f:lastProbeTime: {}
+              f:lastTransitionTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+              f:type: {}
+            k:{"type":"Initialized"}:
+              .: {}
+              f:lastProbeTime: {}
+              f:lastTransitionTime: {}
+              f:status: {}
+              f:type: {}
+            k:{"type":"Ready"}:
+              .: {}
+              f:lastProbeTime: {}
+              f:lastTransitionTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+              f:type: {}
+          f:containerStatuses: {}
+          f:hostIP: {}
+          f:phase: {}
+          f:podIP: {}
+          f:podIPs:
+            .: {}
+            k:{"ip":"172.16.122.93"}:
+              .: {}
+              f:ip: {}
+          f:startTime: {}
+      manager: kubelet
+      operation: Update
+      time: "2020-09-20T19:08:06Z"
+    name: multi-cond-pod
+    namespace: default
+    resourceVersion: "164266"
+    selfLink: /api/v1/namespaces/default/pods/multi-cond-pod
+    uid: c52fded5-169f-4735-94ca-aed9d140847d
+  spec:
+    containers:
+    - args:
+      - sleep 5555
+      image: busybox
+      imagePullPolicy: Always
+      name: main-container
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log
+        name: var-logs
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-ml2mr
+        readOnly: true
+    - image: nginx
+      imagePullPolicy: Always
+      name: sidecar-container
+      ports:
+      - containerPort: 80
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /usr/share/nginx/html
+        name: var-logs
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-ml2mr
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: k8s-node-1.example.com
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - emptyDir: {}
+      name: var-logs
+    - name: default-token-ml2mr
+      secret:
+        defaultMode: 420
+        secretName: default-token-ml2mr
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T17:23:34Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T17:23:34Z"
+      message: 'containers with unready status: [main-container]'
+      reason: ContainersNotReady
+      status: "False"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T17:23:34Z"
+      message: 'containers with unready status: [main-container]'
+      reason: ContainersNotReady
+      status: "False"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T17:23:33Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://f2bc17d0dc40dda5b4fd906bb104ff5ac864b19fdf25577f1f41feb3e9c403df
+      image: busybox:latest
+      imageID: docker-pullable://busybox@sha256:d366a4665ab44f0648d7a00ae3fae139d55e32f9712c67accd604bb55df9d05a
+      lastState:
+        terminated:
+          containerID: docker://f2bc17d0dc40dda5b4fd906bb104ff5ac864b19fdf25577f1f41feb3e9c403df
+          exitCode: 127
+          finishedAt: "2020-09-20T19:07:48Z"
+          message: 'OCI runtime create failed: container_linux.go:349: starting container
+            process caused "exec: \"sleep 5555\": executable file not found in $PATH":
+            unknown'
+          reason: ContainerCannotRun
+          startedAt: "2020-09-20T19:07:48Z"
+      name: main-container
+      ready: false
+      restartCount: 27
+      started: false
+      state:
+        waiting:
+          message: back-off 5m0s restarting failed container=main-container pod=multi-cond-pod_default(c52fded5-169f-4735-94ca-aed9d140847d)
+          reason: CrashLoopBackOff
+    - containerID: docker://fd0836d9d1eb739da5bfc3384d61825dab2225dfccb2351cf9cc21b47b68bd27
+      image: nginx:latest
+      imageID: docker-pullable://nginx@sha256:9a1f8ed9e2273e8b3bbcd2e200024adac624c2e5c9b1d420988809f5c0c41a5e
+      lastState:
+        terminated:
+          containerID: docker://366de3d511b604214d580325cab30a7fcc33d20a17041a4fa3e8d9d76f4aa821
+          exitCode: 255
+          finishedAt: "2020-09-20T18:09:03Z"
+          reason: Error
+          startedAt: "2020-09-20T17:23:38Z"
+      name: sidecar-container
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2020-09-20T18:10:30Z"
+    hostIP: 192.168.0.42
+    phase: Running
+    podIP: 172.16.122.93
+    podIPs:
+    - ip: 172.16.122.93
+    qosClass: BestEffort
+    startTime: "2020-09-20T17:23:34Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cni.projectcalico.org/podIP: 172.16.122.94/32
+      cni.projectcalico.org/podIPs: 172.16.122.94/32
+    creationTimestamp: "2020-09-20T18:13:19Z"
+    labels:
+      run: nginx
+    managedFields:
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            .: {}
+            f:run: {}
+        f:spec:
+          f:containers:
+            k:{"name":"nginx"}:
+              .: {}
+              f:image: {}
+              f:imagePullPolicy: {}
+              f:name: {}
+              f:resources: {}
+              f:terminationMessagePath: {}
+              f:terminationMessagePolicy: {}
+          f:dnsPolicy: {}
+          f:enableServiceLinks: {}
+          f:restartPolicy: {}
+          f:schedulerName: {}
+          f:securityContext: {}
+          f:terminationGracePeriodSeconds: {}
+      manager: kubectl
+      operation: Update
+      time: "2020-09-20T18:13:19Z"
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:cni.projectcalico.org/podIP: {}
+            f:cni.projectcalico.org/podIPs: {}
+      manager: calico
+      operation: Update
+      time: "2020-09-20T18:13:20Z"
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:status:
+          f:conditions:
+            k:{"type":"ContainersReady"}:
+              .: {}
+              f:lastProbeTime: {}
+              f:lastTransitionTime: {}
+              f:status: {}
+              f:type: {}
+            k:{"type":"Initialized"}:
+              .: {}
+              f:lastProbeTime: {}
+              f:lastTransitionTime: {}
+              f:status: {}
+              f:type: {}
+            k:{"type":"Ready"}:
+              .: {}
+              f:lastProbeTime: {}
+              f:lastTransitionTime: {}
+              f:status: {}
+              f:type: {}
+          f:containerStatuses: {}
+          f:hostIP: {}
+          f:phase: {}
+          f:podIP: {}
+          f:podIPs:
+            .: {}
+            k:{"ip":"172.16.122.94"}:
+              .: {}
+              f:ip: {}
+          f:startTime: {}
+      manager: kubelet
+      operation: Update
+      time: "2020-09-20T18:13:23Z"
+    name: nginx
+    namespace: default
+    resourceVersion: "157672"
+    selfLink: /api/v1/namespaces/default/pods/nginx
+    uid: b93a8b22-cbcb-4df8-83bc-5b132dd7a67a
+  spec:
+    containers:
+    - image: nginx
+      imagePullPolicy: Always
+      name: nginx
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-ml2mr
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: k8s-node-1.example.com
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Never
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: default-token-ml2mr
+      secret:
+        defaultMode: 420
+        secretName: default-token-ml2mr
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T18:13:19Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T18:13:23Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T18:13:23Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T18:13:19Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://14187659f2628e1fd072443dfe230e1409c2d4a6277918f63395dfe3ab0c1524
+      image: nginx:latest
+      imageID: docker-pullable://nginx@sha256:9a1f8ed9e2273e8b3bbcd2e200024adac624c2e5c9b1d420988809f5c0c41a5e
+      lastState: {}
+      name: nginx
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2020-09-20T18:13:23Z"
+    hostIP: 192.168.0.42
+    phase: Running
+    podIP: 172.16.122.94
+    podIPs:
+    - ip: 172.16.122.94
+    qosClass: BestEffort
+    startTime: "2020-09-20T18:13:19Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cni.projectcalico.org/podIP: 172.16.182.38/32
+      cni.projectcalico.org/podIPs: 172.16.182.38/32
+    creationTimestamp: "2020-09-20T17:24:34Z"
+    generateName: nginx01-67fdf8d7c7-
+    labels:
+      app: nginx01
+      pod-template-hash: 67fdf8d7c7
+    managedFields:
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:generateName: {}
+          f:labels:
+            .: {}
+            f:app: {}
+            f:pod-template-hash: {}
+          f:ownerReferences:
+            .: {}
+            k:{"uid":"2a97f84b-5625-4ebd-acc0-f4bb62fbf622"}:
+              .: {}
+              f:apiVersion: {}
+              f:blockOwnerDeletion: {}
+              f:controller: {}
+              f:kind: {}
+              f:name: {}
+              f:uid: {}
+        f:spec:
+          f:containers:
+            k:{"name":"nginx"}:
+              .: {}
+              f:image: {}
+              f:imagePullPolicy: {}
+              f:name: {}
+              f:resources: {}
+              f:terminationMessagePath: {}
+              f:terminationMessagePolicy: {}
+          f:dnsPolicy: {}
+          f:enableServiceLinks: {}
+          f:restartPolicy: {}
+          f:schedulerName: {}
+          f:securityContext: {}
+          f:terminationGracePeriodSeconds: {}
+      manager: kube-controller-manager
+      operation: Update
+      time: "2020-09-20T17:24:34Z"
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:cni.projectcalico.org/podIP: {}
+            f:cni.projectcalico.org/podIPs: {}
+      manager: calico
+      operation: Update
+      time: "2020-09-20T18:10:26Z"
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:status:
+          f:conditions:
+            k:{"type":"ContainersReady"}:
+              .: {}
+              f:lastProbeTime: {}
+              f:lastTransitionTime: {}
+              f:status: {}
+              f:type: {}
+            k:{"type":"Initialized"}:
+              .: {}
+              f:lastProbeTime: {}
+              f:lastTransitionTime: {}
+              f:status: {}
+              f:type: {}
+            k:{"type":"Ready"}:
+              .: {}
+              f:lastProbeTime: {}
+              f:lastTransitionTime: {}
+              f:status: {}
+              f:type: {}
+          f:containerStatuses: {}
+          f:hostIP: {}
+          f:phase: {}
+          f:podIP: {}
+          f:podIPs:
+            .: {}
+            k:{"ip":"172.16.182.38"}:
+              .: {}
+              f:ip: {}
+          f:startTime: {}
+      manager: kubelet
+      operation: Update
+      time: "2020-09-20T18:10:30Z"
+    name: nginx01-67fdf8d7c7-4nd29
+    namespace: default
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: nginx01-67fdf8d7c7
+      uid: 2a97f84b-5625-4ebd-acc0-f4bb62fbf622
+    resourceVersion: "157237"
+    selfLink: /api/v1/namespaces/default/pods/nginx01-67fdf8d7c7-4nd29
+    uid: 91912e7f-e3f5-4bd5-af81-2489bfd67363
+  spec:
+    containers:
+    - image: nginx
+      imagePullPolicy: Always
+      name: nginx
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-ml2mr
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: k8s-node-0.example.com
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: default-token-ml2mr
+      secret:
+        defaultMode: 420
+        secretName: default-token-ml2mr
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T17:24:34Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T18:10:30Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T18:10:30Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T17:24:34Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://81e26ca781bbf44af96fdd1a469d5e5c405b9b27795cd4e88aa6fc61de6b9bd2
+      image: nginx:latest
+      imageID: docker-pullable://nginx@sha256:9a1f8ed9e2273e8b3bbcd2e200024adac624c2e5c9b1d420988809f5c0c41a5e
+      lastState:
+        terminated:
+          containerID: docker://16426f6d4894cd84d0e783e17ff4181743c5440db205fe63950dc1c7a70d5c76
+          exitCode: 255
+          finishedAt: "2020-09-20T18:09:01Z"
+          reason: Error
+          startedAt: "2020-09-20T17:24:36Z"
+      name: nginx
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2020-09-20T18:10:30Z"
+    hostIP: 192.168.0.41
+    phase: Running
+    podIP: 172.16.182.38
+    podIPs:
+    - ip: 172.16.182.38
+    qosClass: BestEffort
+    startTime: "2020-09-20T17:24:34Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cni.projectcalico.org/podIP: 172.16.182.39/32
+      cni.projectcalico.org/podIPs: 172.16.182.39/32
+    creationTimestamp: "2020-09-20T18:24:45Z"
+    labels:
+      run: nginx02
+    managedFields:
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            .: {}
+            f:run: {}
+        f:spec:
+          f:containers:
+            k:{"name":"nginx02"}:
+              .: {}
+              f:image: {}
+              f:imagePullPolicy: {}
+              f:name: {}
+              f:resources: {}
+              f:terminationMessagePath: {}
+              f:terminationMessagePolicy: {}
+          f:dnsPolicy: {}
+          f:enableServiceLinks: {}
+          f:restartPolicy: {}
+          f:schedulerName: {}
+          f:securityContext: {}
+          f:terminationGracePeriodSeconds: {}
+      manager: kubectl
+      operation: Update
+      time: "2020-09-20T18:24:45Z"
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:cni.projectcalico.org/podIP: {}
+            f:cni.projectcalico.org/podIPs: {}
+      manager: calico
+      operation: Update
+      time: "2020-09-20T18:24:47Z"
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:status:
+          f:conditions:
+            k:{"type":"ContainersReady"}:
+              .: {}
+              f:lastProbeTime: {}
+              f:lastTransitionTime: {}
+              f:status: {}
+              f:type: {}
+            k:{"type":"Initialized"}:
+              .: {}
+              f:lastProbeTime: {}
+              f:lastTransitionTime: {}
+              f:status: {}
+              f:type: {}
+            k:{"type":"Ready"}:
+              .: {}
+              f:lastProbeTime: {}
+              f:lastTransitionTime: {}
+              f:status: {}
+              f:type: {}
+          f:containerStatuses: {}
+          f:hostIP: {}
+          f:phase: {}
+          f:podIP: {}
+          f:podIPs:
+            .: {}
+            k:{"ip":"172.16.182.39"}:
+              .: {}
+              f:ip: {}
+          f:startTime: {}
+      manager: kubelet
+      operation: Update
+      time: "2020-09-20T18:24:51Z"
+    name: nginx02
+    namespace: default
+    resourceVersion: "159288"
+    selfLink: /api/v1/namespaces/default/pods/nginx02
+    uid: 280c9f85-d8d3-4c39-941f-a0aa391b9f5c
+  spec:
+    containers:
+    - image: nginx
+      imagePullPolicy: Always
+      name: nginx02
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-ml2mr
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: k8s-node-0.example.com
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Never
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: default-token-ml2mr
+      secret:
+        defaultMode: 420
+        secretName: default-token-ml2mr
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T18:24:45Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T18:24:51Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T18:24:51Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2020-09-20T18:24:45Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: docker://6ff342645058ef5f8003f2c4891dae727a89a2b5de3c7e5f1508b35297df1a3a
+      image: nginx:latest
+      imageID: docker-pullable://nginx@sha256:9a1f8ed9e2273e8b3bbcd2e200024adac624c2e5c9b1d420988809f5c0c41a5e
+      lastState: {}
+      name: nginx02
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2020-09-20T18:24:50Z"
+    hostIP: 192.168.0.41
+    phase: Running
+    podIP: 172.16.182.39
+    podIPs:
+    - ip: 172.16.182.39
+    qosClass: BestEffort
+    startTime: "2020-09-20T18:24:45Z"
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
