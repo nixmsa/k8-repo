@@ -1,0 +1,55 @@
+37. Create 5 nginx pods in which two of them is labeled env=prod and three of them is labeled env=dev
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$ kubectl run nginx-dev1 --image=nginx --labels=env=dev --restart=Never
+pod/nginx-dev1 created
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$ kubectl run nginx-dev2 --image=nginx --labels=env=dev --restart=Never
+pod/nginx-dev2 created
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$ kubectl run nginx-dev3 --image=nginx --labels=env=dev --restart=Never
+pod/nginx-dev3 created
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$ kubectl run nginx-dev1 --image=nginx --labels=env=dev --restart=Never
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$ kubectl run nginx-prod1 --image=nginx --labels=env=prod --restart=Never
+pod/nginx-prod1 created
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$ kubectl run nginx-prod2 --image=nginx --labels=env=prod --restart=Never
+
+
+####
+
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$ kubectl get pods --show-labels;
+NAME                       READY   STATUS      RESTARTS   AGE     LABELS
+busybox                    0/1     Completed   0          6d8h    run=busybox
+busybox-sleep-3600         0/1     Error       0          6d7h    run=busybox-sleep-3600
+nginx                      0/1     Error       2          6d9h    run=nginx
+nginx-dev1                 1/1     Running     0          5m32s   env=dev
+nginx-dev2                 1/1     Running     0          5m26s   env=dev
+nginx-dev3                 1/1     Running     0          5m20s   env=dev
+nginx-prod1                1/1     Running     0          4m39s   env=prod
+nginx-prod2                1/1     Running     0          4m33s   env=prod
+nginx01-67fdf8d7c7-4nd29   1/1     Running     2          6d12h   app=nginx01,pod-template-hash=67fdf8d7c7
+nginx02                    0/1     Error       0          6d11h   run=nginx02
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$
+
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$ kubectl get pods -l env=dev
+NAME         READY   STATUS    RESTARTS   AGE
+nginx-dev1   1/1     Running   0          6m58s
+nginx-dev2   1/1     Running   0          6m52s
+nginx-dev3   1/1     Running   0          6m46s
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$ kubectl get pods -l env=dev --show-labels;
+NAME         READY   STATUS    RESTARTS   AGE     LABELS
+nginx-dev1   1/1     Running   0          7m15s   env=dev
+nginx-dev2   1/1     Running   0          7m9s    env=dev
+nginx-dev3   1/1     Running   0          7m3s    env=dev
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$
+
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$ kubectl get pods -L env
+NAME                       READY   STATUS      RESTARTS   AGE     ENV
+busybox                    0/1     Completed   0          6d8h
+busybox-sleep-3600         0/1     Error       0          6d7h
+nginx                      0/1     Error       2          6d9h
+nginx-dev1                 1/1     Running     0          8m1s    dev
+nginx-dev2                 1/1     Running     0          7m55s   dev
+nginx-dev3                 1/1     Running     0          7m49s   dev
+nginx-prod1                1/1     Running     0          7m8s    prod
+nginx-prod2                1/1     Running     0          7m2s    prod
+nginx01-67fdf8d7c7-4nd29   1/1     Running     2          6d12h
+nginx02                    0/1     Error       0          6d11h
+mahsan@k8s-master:~/projects/k8-repo/k8-repo/k8-repo/techcode/projects/ckad/Q-ckad/Pod-Design$
+q43
