@@ -1,2 +1,0 @@
-kubectl get pods nginx02 -o yaml
-8. Output the yaml file of the pod you just created

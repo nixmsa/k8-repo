@@ -1,9 +1,0 @@
-12. Delete the pod you just created without any delay (force delete)
-kubectl delete po nginx --grace-period=0 --force
-
-
-@@@
-kubectl delete po nginx --grace-period=0 --force
-warning: Immediate deletion does not wait for confirmation that the running resource has been terminated. The resource may continue to run on the cluster indefinitely.
-pod "nginx" force deleted
-

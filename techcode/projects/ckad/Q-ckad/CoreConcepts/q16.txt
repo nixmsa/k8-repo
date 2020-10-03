@@ -1,7 +1,0 @@
-16. Check the Image version without the describe command
-
-mahsan@k8s-master:~/porject/k8-repo/techcode/projects/ckad/Q-ckad$ kubectl get po nginx -o jsonpath='{.spec.containers[].image }{"\n"}'
-nginx:1.17.1
-
-
-
