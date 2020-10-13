@@ -1,0 +1,110 @@
+Configuring a Pod to Use a ConfigMap
+
+Create a new file named config.txt with the following environment variables as key/value pairs on each line.
+
+DB_URL equates to localhost:3306
+
+DB_USERNAME equates to postgres
+
+Create a new ConfigMap named db-config from that file.
+
+Create a Pod named backend that uses the environment variables from the ConfigMap and runs the container with the image nginx.
+
+Shell into the Pod and print out the created environment variables. You should find DB_URL and DB_USERNAME with their appropriate values.
+
+
+@@@@@
+
+Configuring a Pod to Use a ConfigMap
+
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$ echo -e "DB_URL=localhost:3306\nDB_USERNAME=postgres" > config.txt
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$ ll
+total 32
+drwxrwxr-x 2 mahsan mahsan  4096 Oct 13 03:20 ./
+drwxrwxr-x 3 mahsan mahsan  4096 Oct 13 02:35 ../
+-rw-rw-r-- 1 mahsan mahsan    43 Oct 13 03:20 config.txt
+
+
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$ k create cm db-config --from-env-file=config.txt
+configmap/db-config created
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$ k get cm
+NAME        DATA   AGE
+db-config   2      8s
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$
+
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$ k run backend --image=nginx --restart=Never -o yaml --dry-run > pod.yaml
+W1013 04:54:26.363140   74802 helpers.go:553] --dry-run is deprecated and can be replaced with --dry-run=client.
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$ cat pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: backend
+  name: backend
+spec:
+  containers:
+  - image: nginx
+    name: backend
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$
+
+ 
+ 
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$ k create -f pod.yaml
+pod/backend created
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$ k get pods
+NAME                     READY   STATUS    RESTARTS   AGE
+backend                  1/1     Running   0          4s
+nginx                    0/1     Error     0          5d2h
+nginx-6799fc88d8-vnhc7   1/1     Running   3          9d
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$ cat pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: backend
+  name: backend
+spec:
+  containers:
+  - image: nginx
+    name: backend
+    envFrom:
+       - configMapRef:
+           name: db-config
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$
+ 
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01$ kubectl exec -it backend -- env
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOSTNAME=backend
+TERM=xterm
+DB_URL=localhost:3306
+DB_USERNAME=postgres
+KUBERNETES_PORT_443_TCP_PROTO=tcp
+KUBERNETES_PORT_443_TCP_PORT=443
+KUBERNETES_PORT_443_TCP_ADDR=10.96.0.1
+NGINX_PORT_80_TCP=tcp://10.109.59.51:80
+NGINX_PORT_80_TCP_PROTO=tcp
+KUBERNETES_SERVICE_PORT_HTTPS=443
+KUBERNETES_PORT=tcp://10.96.0.1:443
+NGINX_PORT=tcp://10.109.59.51:80
+NGINX_PORT_80_TCP_ADDR=10.109.59.51
+KUBERNETES_SERVICE_HOST=10.96.0.1
+KUBERNETES_PORT_443_TCP=tcp://10.96.0.1:443
+NGINX_SERVICE_HOST=10.109.59.51
+NGINX_SERVICE_PORT=80
+KUBERNETES_SERVICE_PORT=443
+NGINX_PORT_80_TCP_PORT=80
+NGINX_VERSION=1.19.3
+NJS_VERSION=0.4.4
+PKG_RELEASE=1~buster
+HOME=/root
+ 
