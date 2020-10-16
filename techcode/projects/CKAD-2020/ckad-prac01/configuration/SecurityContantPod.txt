@@ -1,0 +1,35 @@
+Create a Pod named secured that uses the image nginx for a single container. Mount an emptyDir volume to the directory /data/app.
+
+Files created on the volume should use the filesystem group ID 3000.
+
+Get a shell to the running container and create a new file named logs.txt in the directory /data/app. List the contents of the directory and write them down.
+
+
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$ cat security-contant.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secured
+spec:
+  securityContext:
+    fsGroup: 3000
+  containers:
+  - image: nginx
+    name: secured
+    volumeMounts:
+    - mountPath: /data/app
+      name: cache-volume
+  volumes:
+    - name: cache-volume
+      emptyDir: {}
+
+
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$ kubectl exec -it secured -- /bin/sh
+# cd /data/app
+# ls
+asd.txt
+# touch 2 2 3 4 5 5
+# ls
+2  3  4  5  asd.txt
+#
+
