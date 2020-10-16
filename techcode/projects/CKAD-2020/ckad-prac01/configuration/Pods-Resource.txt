@@ -1,0 +1,77 @@
+Create a resource quota named apps under the namespace rq-demo using the following YAML definition in the file rq.yaml.
+
+
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$ kubectl get quota -n rq-demo
+NAME   AGE   REQUEST                                                 LIMIT
+app    9s    pods: 0/2, requests.cpu: 0/2, requests.memory: 0/500m
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$ kubectl describe  quota -n rq-demoName:            app
+Namespace:       rq-demo
+Resource         Used  Hard
+--------         ----  ----
+pods             0     2
+requests.cpu     0     2
+requests.memory  0     500m
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$ ll
+total 56
+drwxrwxr-x 2 mahsan mahsan  4096 Oct 16 03:51 ./
+drwxrwxr-x 4 mahsan mahsan  4096 Oct 13 05:09 ../
+-rw-rw-r-- 1 mahsan mahsan    43 Oct 13 03:20 config.txt
+-rw-rw-r-- 1 mahsan mahsan  3747 Oct 13 05:04 configuration01.txt
+-rw-rw-r-- 1 mahsan mahsan  4548 Oct 14 04:34 configuring-secret.txt
+-rw------- 1 mahsan mahsan 12288 Oct 16 03:48 .Pods-Resource.txt.swp
+-rw-rw-r-- 1 mahsan mahsan   300 Oct 13 05:01 pod.yaml
+-rw-rw-r-- 1 mahsan mahsan   133 Oct 16 03:51 rq.yaml
+-rw-rw-r-- 1 mahsan mahsan   377 Oct 13 05:38 secret-pod.yaml
+-rw-rw-r-- 1 mahsan mahsan   953 Oct 16 02:57 SecurityContantPod.txt
+-rw-rw-r-- 1 mahsan mahsan   277 Oct 16 02:50 security-contant.yaml
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$ vim resource-limit-pod.yaml
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$ kubectl create -f resource-limit-pod.yaml
+Error from server (Forbidden): error when creating "resource-limit-pod.yaml": pods "mypod" is forbidden: exceeded quota: app, requested: pods=1,requests.memory=1G, used: pods=3,requests.memory=0, limited: pods=2,requests.memory=500m
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$ cat resource-limit-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: mypod
+  name: mypod
+spec:
+  containers:
+  - image: nginx
+    name: mypod
+    resources:
+      requests:
+        memory: "1G"
+        cpu: "400m"
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$
+
+
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$ cat rq.yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: app
+spec:
+  hard:
+    pods: "2"
+    requests.cpu: "2"
+    requests.memory: 500m
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$
+
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$ kubectl  apply -f rq.yaml -n rq-demo
+Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+resourcequota/app configured
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/configuration$ kubectl describe  quota -n rq-demo
+Name:            app
+Namespace:       rq-demo
+Resource         Used  Hard
+--------         ----  ----
+pods             0     2
+requests.cpu     0     2
+requests.memory  0     200m
+mahsan@K8s-master:~/projects/k8-repo/techcode/projects/CKAD-2020/ckad-prac01/
+
+
